@@ -6,7 +6,7 @@
       <p>Sensei Richard Robinson. Lunes, miércoles y viernes.</p>
       <p class="numero">+54 11 3059-4142</p>
       <div class="redes">
-        <a class="boton" href="https://wa.me/541130594142">Abrir WhatsApp</a>
+        <a class="boton" href="{{WHATSAPP}}">Abrir WhatsApp</a>
         <a class="boton boton-linea" href="https://www.instagram.com/caballitojiujitsuclub/">Instagram</a>
       </div>
     </div>
@@ -23,6 +23,12 @@
   <form class="formulario" id="form-contacto">
     <h2>Dejanos un mensaje</h2>
     <p class="trampa" aria-hidden="true"><label for="c-sitio">No completar</label><input id="c-sitio" name="sitio" type="text" tabindex="-1" autocomplete="off"></p>
+    <fieldset class="campo sede-opciones">
+      <legend>¿A qué sede querés ir?</legend>
+      <label><input type="radio" name="sede" id="c-sede-caballito" value="Caballito" checked> Caballito</label>
+      <label><input type="radio" name="sede" id="c-sede-ramos" value="Ramos Mejía"> Ramos Mejía</label>
+      <label><input type="radio" name="sede" id="c-sede-nose" value="Todavía no sé"> Todavía no sé</label>
+    </fieldset>
     <div class="campo">
       <label for="c-nombre">Nombre</label>
       <input id="c-nombre" name="nombre" type="text" autocomplete="name" required>

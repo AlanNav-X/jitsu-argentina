@@ -81,6 +81,65 @@
     } catch (e) { /* sin Intl: la grilla queda completa igual */ }
   }
 
+  /* ---------- Índice: marca la sección que se está leyendo ---------- */
+  var enlaces = Array.prototype.slice.call(document.querySelectorAll('.indice a[href^="#"]'));
+  if (enlaces.length && 'IntersectionObserver' in window) {
+    var porId = {};
+    enlaces.forEach(function (a) { porId[a.getAttribute('href').slice(1)] = a; });
+    var visibles = {};
+    var espia = new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (e) { visibles[e.target.id] = e.isIntersecting; });
+      var primero = null;
+      enlaces.forEach(function (a) { var id = a.getAttribute('href').slice(1); if (!primero && visibles[id]) primero = id; });
+      if (primero) enlaces.forEach(function (a) { a.classList.toggle('activa', a === porId[primero]); });
+    }, { rootMargin: '-80px 0px -55% 0px' });
+    Object.keys(porId).forEach(function (id) { var el = document.getElementById(id); if (el) espia.observe(el); });
+  }
+
+  /* ---------- Animaciones que arrancan al entrar en pantalla (una sola vez) ---------- */
+  var animables = Array.prototype.slice.call(document.querySelectorAll('[data-animar], .grado-panel'));
+  if (animables.length && 'IntersectionObserver' in window) {
+    var vista = new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        e.target.classList.add(e.target.classList.contains('grado-panel') ? 'anudar' : 'en-vista');
+        vista.unobserve(e.target);
+      });
+    }, { threshold: 0.4 });
+    animables.forEach(function (el) { vista.observe(el); });
+  }
+
+  /* ---------- Grados interactivos en la portada ---------- */
+  var panel = document.getElementById('grado-panel');
+  var datosEl = document.getElementById('datos-grados');
+  if (panel && datosEl) {
+    var datos = JSON.parse(datosEl.textContent);
+    var botones = Array.prototype.slice.call(document.querySelectorAll('.escalera button[data-kyu]'));
+    var mostrar = function (n) {
+      var g = datos.filter(function (d) { return d.n === n; })[0];
+      if (!g) return;
+      botones.forEach(function (b) { b.setAttribute('aria-pressed', String(+b.dataset.kyu === n)); });
+      panel.style.setProperty('--cinta', 'var(--c-' + g.c + ')');
+      document.getElementById('gp-titulo').textContent = g.n + '° kyu, cinturón ' + g.nombre;
+      document.getElementById('gp-texto').textContent = g.texto;
+      document.getElementById('gp-enlace').setAttribute('href', 'grados.html#kyu-' + g.n);
+      var pista = panel.querySelector('.lances-pista');
+      pista.setAttribute('aria-label', g.acumulados + ' de ' + g.total + ' lances');
+      pista.firstElementChild.style.width = (g.acumulados / g.total * 100).toFixed(1) + '%';
+      var p = panel.querySelector('.lances p');
+      p.textContent = '';
+      if (g.lances) {
+        var fuerte = document.createElement('strong');
+        fuerte.textContent = g.lances + ' lances nuevos';
+        p.appendChild(fuerte);
+        p.appendChild(document.createTextNode(', ' + g.acumulados + ' de ' + g.total + ' en total'));
+      } else {
+        p.textContent = 'Todavía sin lances: se empieza por las caídas';
+      }
+    };
+    botones.forEach(function (b) { b.addEventListener('click', function () { mostrar(+b.dataset.kyu); }); });
+  }
+
   /* ---------- Formulario de contacto ---------- */
   var form = document.getElementById('form-contacto');
   if (form) {
@@ -93,7 +152,8 @@
       var url = new URL(DESTINO);
       url.searchParams.append('name', form.elements.nombre.value.trim());
       url.searchParams.append('email', form.elements.email.value.trim());
-      url.searchParams.append('message', form.elements.mensaje.value.trim());
+      var sede = form.elements.sede ? form.elements.sede.value : '';
+      url.searchParams.append('message', (sede ? '[Sede: ' + sede + '] ' : '') + form.elements.mensaje.value.trim());
       enviar.disabled = true;
       enviar.textContent = 'Enviando…';
       estado.hidden = true;

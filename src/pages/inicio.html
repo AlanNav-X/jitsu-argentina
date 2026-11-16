@@ -38,7 +38,7 @@
 
     <div class="sedes">
       <article class="sede-ficha">
-        <figure class="sede-foto"><img src="assets/img/caballito.jpg" width="1600" height="1202" alt="Alumnos y sensei de la sede Caballito sobre el tatami, sonriendo a la cámara."></figure>
+        <figure class="sede-foto"><picture><source srcset="assets/img/caballito.webp" type="image/webp"><img src="assets/img/caballito.jpg" width="1200" height="902" alt="Alumnos y sensei de la sede Caballito sobre el tatami, sonriendo a la cámara."></picture></figure>
         <div class="sede-datos">
           <h3>Sede Caballito</h3>
           <p class="sensei"><span class="dan" role="img" aria-label="Cinturón negro, tercer dan"><i></i><i></i><i></i></span><span>Sensei Richard Robinson, Sandan (3.<sup>er</sup> dan)</span></p>
@@ -51,14 +51,15 @@
             <li class="clase"><span class="d">Vie</span><span class="h">19:00<small>a 20:30</small></span></li>
           </ul>
           <div class="redes">
-            <a class="boton" href="https://wa.me/541130594142">WhatsApp</a>
+            <a class="boton" href="{{WHATSAPP}}">WhatsApp</a>
             <a class="boton boton-linea" href="https://www.instagram.com/caballitojiujitsuclub/">Instagram</a>
           </div>
+          <p class="agendar"><a href="calendario/caballito.ics">Agregar estas clases a tu calendario</a></p>
         </div>
       </article>
 
       <article class="sede-ficha">
-        <figure class="sede-foto"><img src="assets/img/ramos-mejia.jpg" width="1440" height="1440" alt="Grupo de alumnos de la sede Ramos Mejía después de una clase." loading="lazy"></figure>
+        <figure class="sede-foto"><picture><source srcset="assets/img/ramos-mejia.webp" type="image/webp"><img src="assets/img/ramos-mejia.jpg" width="1200" height="1200" alt="Grupo de alumnos de la sede Ramos Mejía después de una clase." loading="lazy"></picture></figure>
         <div class="sede-datos">
           <h3>Sede Ramos Mejía</h3>
           <p class="sensei"><span class="dan" role="img" aria-label="Cinturón negro, primer dan"><i></i></span><span>Sensei José María Vaquer, Shodan (1.<sup>er</sup> dan)</span></p>
@@ -74,6 +75,7 @@
             <a class="boton" href="https://www.instagram.com/haedojiujitsuclub/">Instagram</a>
             <a class="boton boton-linea" href="https://www.facebook.com/p/Haedo-Jiu-Jitsu-Club-100057642211295/">Facebook</a>
           </div>
+          <p class="agendar"><a href="calendario/ramos-mejia.ics">Agregar estas clases a tu calendario</a></p>
         </div>
       </article>
     </div>
@@ -104,17 +106,15 @@
   <div class="caja">
     <h2 class="seccion-titulo">De blanco a marrón en ocho exámenes</h2>
     <p class="seccion-intro">Empezás en 8° kyu. Para pasar de un grado al próximo se necesita completar un examen. Al llegar a 1° kyu se puede enseñar Shorinji Kan Jiu Jitsu.</p>
-    <ol class="escalera">
-      <li><span class="k">8° kyu</span><a class="cinta" style="--cinta:var(--c-blanco)" href="grados.html#kyu-8"><span>Blanco</span></a></li>
-      <li><span class="k">7° kyu</span><a class="cinta" style="--cinta:var(--c-amarillo)" href="grados.html#kyu-7"><span>Amarillo</span></a></li>
-      <li><span class="k">6° kyu</span><a class="cinta" style="--cinta:var(--c-naranja)" href="grados.html#kyu-6"><span>Anaranjado</span></a></li>
-      <li><span class="k">5° kyu</span><a class="cinta" style="--cinta:var(--c-verde)" href="grados.html#kyu-5"><span>Verde</span></a></li>
-      <li><span class="k">4° kyu</span><a class="cinta" style="--cinta:var(--c-violeta)" href="grados.html#kyu-4"><span>Violeta</span></a></li>
-      <li><span class="k">3° kyu</span><a class="cinta" style="--cinta:var(--c-celeste)" href="grados.html#kyu-3"><span>Celeste</span></a></li>
-      <li><span class="k">2° kyu</span><a class="cinta" style="--cinta:var(--c-azul)" href="grados.html#kyu-2"><span>Azul</span></a></li>
-      <li><span class="k">1° kyu</span><a class="cinta" style="--cinta:var(--c-marron)" href="grados.html#kyu-1"><span>Marrón</span></a></li>
-    </ol>
-    <p class="tras-lista"><a class="boton boton-linea" href="grados.html">Ver qué se pide en cada grado</a></p>
+    <div class="grados-vivo">
+      <div>
+        <p class="ayuda">Tocá un cinturón para ver qué se aprende en ese grado.</p>
+        <ol class="escalera">
+<!--ESCALERA-->
+        </ol>
+      </div>
+<!--PANEL-->
+    </div>
   </div>
 </section>
 
@@ -125,7 +125,16 @@
       <h2 class="seccion-titulo">Parte de The Jiu Jitsu Foundation</h2>
       <p class="seccion-intro">Una organización de artes marciales progresiva que enseña un estilo de Jiu Jitsu mundialmente conocido como Shorinji Kan. Tiene clubes en 14 países.</p>
       <p class="paises"><strong>Argentina</strong>, Australia, Canadá, Dinamarca, Escocia, España, Estados Unidos, Gales, Inglaterra, Islas Vírgenes Británicas, Japón, Kenia, Sudáfrica y Nueva Zelanda.</p>
-      <p class="tras-lista"><a class="boton boton-linea" href="fundacion.html">Conocé la Fundación</a></p>
+      <p class="tras-lista redes"><a class="boton boton-linea" href="fundacion.html">Conocé la Fundación</a><a class="boton boton-linea" href="{{TJJF}}" rel="noopener">jitsufoundation.org</a></p>
+    </div>
+  </div>
+</section>
+
+<section class="seccion linea-arriba" id="preguntas">
+  <div class="caja preguntas">
+    <h2 class="seccion-titulo">Antes de la primera clase</h2>
+    <div class="faq">
+<!--FAQ-->
     </div>
   </div>
 </section>
@@ -135,7 +144,7 @@
     <h2>Vení a una clase</h2>
     <p>Muchos principiantes empiezan para aprender defensa personal; otros vienen de otras artes marciales. Sea cual sea tu razón, escribinos y te esperamos en el tatami.</p>
     <div class="portada-acciones">
-      <a class="boton" href="https://wa.me/541130594142">WhatsApp de Caballito</a>
+      <a class="boton" href="{{WHATSAPP}}">WhatsApp de Caballito</a>
       <a class="boton boton-linea" href="https://www.instagram.com/haedojiujitsuclub/">Instagram de Ramos Mejía</a>
     </div>
   </div>

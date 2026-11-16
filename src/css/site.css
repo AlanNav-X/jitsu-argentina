@@ -331,3 +331,143 @@ p { margin: 0; }
 @media (min-width: 900px) { .contacto-grilla { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 4rem; align-items: start; } }
 
 sup { font-size: .7em; line-height: 0; }
+
+/* ---------- Interacción y contenido ampliado ---------- */
+.saltar { position: absolute; left: -9999px; top: 0; z-index: 50; background: var(--sol); color: var(--indigo); padding: .7rem 1rem; font-weight: 700; }
+.saltar:focus { left: calc(var(--obi) + 8px); top: 8px; }
+picture { display: block; }
+.agendar { margin-top: 1rem; font-size: var(--t-chico); font-weight: 500; }
+
+/* El kanji se revela de arriba hacia abajo, como un trazo de pincel */
+@media (prefers-reduced-motion: no-preference) {
+  .portada .kanji { animation: pincel 1.1s cubic-bezier(.6, 0, .2, 1) both; }
+  @keyframes pincel { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+}
+
+/* Grados interactivos en la portada */
+.grados-vivo { display: grid; gap: 2.5rem; margin-top: clamp(2rem, 4vw, 3.5rem); align-items: start; }
+.grados-vivo .escalera { margin-top: .8rem; }
+.ayuda { font-size: var(--t-chico); color: var(--indigo-medio); }
+button.cinta { font-family: inherit; cursor: pointer; text-align: left; transition: transform .15s ease, box-shadow .15s ease; }
+button.cinta:hover { transform: translateX(4px); }
+button.cinta[aria-pressed="true"] { box-shadow: 5px 5px 0 var(--indigo); transform: translate(-2px, -2px); }
+button.cinta[aria-pressed="true"] span { background: var(--indigo); color: var(--gi); }
+.grado-panel { background: var(--blanco); border: 1px solid var(--indigo); box-shadow: 10px 10px 0 var(--tatami); padding: clamp(1.2rem, 3vw, 2rem); min-width: 0; display: grid; gap: .9rem; }
+.grado-panel h3 { font-size: var(--t-3); }
+.grado-panel a { font-weight: 700; }
+.nudo { width: 100%; max-width: 340px; height: auto; overflow: visible; justify-self: center; margin-block: .4rem .6rem; }
+.nudo path { fill: var(--cinta, var(--c-blanco)); stroke: var(--indigo); stroke-width: 4; stroke-linejoin: round; transition: fill .45s ease; transform-box: fill-box; transform-origin: center; }
+@media (min-width: 900px) { .grados-vivo { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 4rem; } .grado-panel { position: sticky; top: 6rem; } }
+@media (prefers-reduced-motion: no-preference) {
+  .anudar .nudo path:nth-child(2) { animation: cenir .7s cubic-bezier(.6, 0, .2, 1) both; }
+  .anudar .nudo path:nth-child(5) { animation: caer .45s ease-out .55s both; transform-origin: 100% 0; }
+  .anudar .nudo path:nth-child(7) { animation: caer .45s ease-out .7s both; transform-origin: 0 0; }
+  .anudar .nudo path:nth-child(1), .anudar .nudo path:nth-child(3), .anudar .nudo path:nth-child(4),
+  .anudar .nudo path:nth-child(6), .anudar .nudo path:nth-child(8) { animation: apretar .4s cubic-bezier(.3, 1.6, .5, 1) 1.05s both; }
+  @keyframes cenir { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(-10px); } }
+  @keyframes caer { from { opacity: 0; transform: scale(.2); } to { opacity: 1; transform: scale(1); } }
+  @keyframes apretar { from { opacity: 0; transform: scale(1.5); } to { opacity: 1; transform: scale(1); } }
+  [data-animar].en-vista .mons i { animation: mon .35s cubic-bezier(.3, 1.6, .5, 1) both; transform-origin: 50% 0; }
+  [data-animar].en-vista .mons i:nth-child(2) { animation-delay: .25s; }
+  [data-animar].en-vista .mons i:nth-child(3) { animation-delay: .5s; }
+  @keyframes mon { from { opacity: 0; transform: scaleY(0); } to { opacity: 1; transform: scaleY(1); } }
+}
+
+/* Lances y defensas */
+.lances { margin-top: 1rem; }
+.lances-pista { height: 10px; border: 1px solid var(--indigo); background: var(--gi); }
+.lances-pista i { display: block; height: 100%; background: var(--indigo); transition: width .5s ease; }
+.lances p { font-size: var(--t-chico); color: var(--indigo-medio); margin-top: .35rem; font-variant-numeric: tabular-nums; }
+.lances strong { color: var(--indigo); }
+.defensas { list-style: none; margin: 1rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: .5rem; }
+.defensas li { display: inline-flex; align-items: center; gap: .45rem; padding: .3rem .7rem .3rem .5rem; border: 1px solid var(--indigo); background: var(--blanco); font-size: var(--t-chico); font-weight: 500; }
+.grado .nota { margin-top: 1.1rem; }
+
+/* Leyenda de mons */
+.mons-leyenda { background: var(--blanco); border: 1px solid var(--indigo); box-shadow: 10px 10px 0 var(--tatami); padding: clamp(1.2rem, 3vw, 1.8rem); margin-bottom: 3rem; }
+.mons-leyenda h2 { font-size: var(--t-3); margin-bottom: 1rem; }
+.mons-leyenda ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr)); gap: 1rem; }
+.mons-leyenda li { display: grid; font-size: var(--t-chico); }
+.mons-leyenda .cinta { height: 2.2rem; justify-content: flex-end; margin-bottom: .4rem; padding: 0 .7rem; }
+.mons-leyenda strong { font-family: var(--display); font-size: 1.05rem; }
+.mons-leyenda > p { margin-top: 1rem; font-size: var(--t-chico); color: var(--indigo-medio); }
+
+/* On y Giri */
+.on-giri { margin: 0 0 2rem; display: grid; gap: .5rem; }
+.og-nodo { border: 1px solid var(--indigo); background: var(--blanco); padding: .9rem 1rem; display: grid; }
+.og-nodo strong { font-family: var(--display); font-size: 1.2rem; }
+.og-nodo span { font-size: var(--t-chico); color: var(--indigo-medio); }
+.og-vos { background: var(--indigo); }
+.og-vos strong { color: var(--gi); } .og-vos span { color: var(--c-celeste); }
+.og-flecha { display: flex; align-items: center; gap: .6rem; padding-left: 1rem; font-size: var(--t-chico); color: var(--indigo-medio); }
+.og-flecha::before { content: ""; width: 2px; height: 2.2rem; background: var(--indigo); box-shadow: 0 0 0 0 transparent; }
+.og-flecha b { font-family: var(--display); font-size: 1.15rem; color: var(--indigo); background: linear-gradient(transparent 62%, var(--sol) 62%); }
+@media (min-width: 760px) {
+  .on-giri { grid-template-columns: minmax(0, 1fr) auto minmax(0, .8fr) auto minmax(0, 1fr); align-items: stretch; gap: 0; }
+  .og-flecha { flex-direction: column; justify-content: center; text-align: center; gap: .1rem; padding: 0 .5rem; position: relative; min-width: 6.2rem; }
+  .og-flecha::before { position: absolute; left: 0; right: 0; bottom: .9rem; width: auto; height: 2px; }
+  .og-flecha::after { content: ""; position: absolute; right: 0; bottom: calc(.9rem - 4px); border: 5px solid transparent; border-left-color: var(--indigo); border-right: 0; }
+  .og-flecha span { padding-bottom: 1.2rem; }
+}
+
+/* Glosario */
+.glosa { border-bottom: 2px dotted var(--celeste-hondo); cursor: help; position: relative; }
+.glosa:hover::after, .glosa:focus::after {
+  content: attr(data-def); position: fixed; left: calc(var(--obi) + 16px); right: 16px; bottom: 5rem; z-index: 40;
+  background: var(--indigo); color: var(--gi); padding: .7rem .9rem; font-size: var(--t-chico); font-weight: 500; line-height: 1.4;
+  font-family: var(--texto); border-left: 6px solid var(--sol);
+}
+@media (min-width: 900px) and (hover: hover) {
+  .glosa:hover::after, .glosa:focus::after { position: absolute; left: 0; right: auto; bottom: auto; top: calc(100% + 6px); width: max-content; max-width: 17rem; }
+}
+.glosario { margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); border-top: 1px solid var(--indigo); border-left: 1px solid var(--indigo); background: var(--blanco); }
+.glosario div { padding: .8rem 1rem; border-right: 1px solid var(--indigo); border-bottom: 1px solid var(--indigo); }
+.glosario dt { font-family: var(--display); font-weight: 800; font-size: 1.1rem; }
+.glosario dd { margin: 0; font-size: var(--t-chico); color: var(--indigo-medio); }
+
+/* Eventos de la Fundación */
+.eventos { display: grid; gap: 1rem; margin-top: 1.6rem; }
+.evento { border: 1px solid var(--indigo); background: var(--blanco); padding: 1.1rem 1.2rem; }
+.evento h3 { font-size: 1.35rem; }
+.evento .cuando { font-size: var(--t-chico); font-weight: 700; color: var(--celeste-hondo); margin: .15rem 0 .5rem; }
+.evento p + p { margin-top: 0; }
+.evento p:last-child { font-size: .98rem; }
+@media (min-width: 700px) { .eventos { grid-template-columns: 1fr 1fr; } }
+
+/* Preguntas */
+.preguntas { display: grid; gap: 2rem; }
+.faq { border-top: 1px solid var(--indigo); min-width: 0; }
+.faq details { border-bottom: 1px solid var(--indigo); }
+.faq summary { cursor: pointer; list-style: none; padding: 1.1rem 2.5rem 1.1rem 0; font-family: var(--display); font-weight: 800; font-size: var(--t-3); line-height: 1.25; position: relative; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; position: absolute; right: .2rem; top: .85rem; font-size: 1.8rem; font-weight: 500; transition: transform .2s ease; }
+.faq details[open] summary::after { transform: rotate(45deg); }
+.faq details p { padding: 0 0 1.3rem; max-width: 62ch; }
+@media (min-width: 900px) { .preguntas { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 4rem; } }
+
+/* Índice activo y anterior / siguiente */
+.indice a.activa { border-left-color: var(--sol); font-weight: 700; }
+.seguir { border-top: 1px solid var(--indigo); }
+.seguir .caja { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding-block: 1.6rem; }
+.seguir a { text-decoration: none; font-family: var(--display); font-weight: 800; font-size: var(--t-3); line-height: 1.2; display: grid; }
+.seguir a span { font-family: var(--texto); font-weight: 500; font-size: var(--t-chico); color: var(--indigo-medio); }
+.seguir a:hover { color: var(--celeste-hondo); }
+.seguir .despues { text-align: right; grid-column: 2; }
+
+/* Formulario: sede */
+.sede-opciones { border: 0; padding: 0; margin-inline: 0; display: flex; flex-wrap: wrap; gap: .5rem; }
+.sede-opciones legend { font-weight: 700; font-size: var(--t-chico); padding: 0; margin-bottom: .45rem; }
+.sede-opciones label { display: inline-flex; align-items: center; gap: .45rem; padding: .5rem .8rem; border: 1px solid var(--indigo); background: var(--gi); cursor: pointer; font-weight: 500; }
+.sede-opciones label:has(input:checked) { background: var(--indigo); color: var(--gi); }
+.sede-opciones input { width: auto; accent-color: var(--sol); margin: 0; }
+
+/* WhatsApp siempre a mano en el celular */
+.barra-wa { display: none; }
+@media (max-width: 899px) {
+  .barra-wa {
+    display: block; position: fixed; left: var(--obi); right: 0; bottom: 0; z-index: 25; text-align: center; text-decoration: none; font-weight: 700;
+    background: var(--sol); color: var(--indigo); border-top: 1px solid var(--indigo);
+    padding: .8rem max(16px, env(safe-area-inset-right, 0px)) calc(.8rem + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  }
+  body:has(.barra-wa) .pie { padding-bottom: 3.4rem; }
+}

@@ -12,30 +12,130 @@ const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, 
 const tipo = (s) => esc(s).replace(/"([^"]+)"/g, '“$1”').replace(/'(On|Giri)'/g, '‘$1’');
 const slug = (s) => s.toLowerCase().normalize('NFD').replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, '-').slice(0, 40);
 
-const WHATSAPP = 'https://wa.me/541130594142';
-const LOGIN = 'https://jitsuargentina.com.ar/login';
+const SITIO = 'https://jitsuargentina.com.ar';
+const WA_TEXTO = encodeURIComponent('Hola, quiero probar una clase de Jiu Jitsu en Caballito.');
+const WHATSAPP = `https://wa.me/541130594142?text=${WA_TEXTO}`;
+const LOGIN = `${SITIO}/login`;
+const TJJF = 'https://www.jitsufoundation.org/';
 const MENU = [
   ['index.html', 'Sedes y horarios'], ['fundacion.html', 'La Fundación'], ['historia.html', 'Historia'],
   ['filosofia.html', 'Filosofía'], ['grados.html', 'Grados'], ['contacto.html', 'Contacto'],
 ];
 
-function cabeza({ titulo, descripcion }) {
+/* ---------- Datos de las sedes (una sola fuente para portada, calendario y Google) ---------- */
+const SEDES = [
+  { id: 'caballito', nombre: 'Sede Caballito', calle: 'General Manuel A. Rodríguez 1191', localidad: 'Caballito', region: 'Ciudad Autónoma de Buenos Aires',
+    clases: [['MO', 'Mo', '19:00', '20:30'], ['WE', 'We', '18:30', '20:00'], ['FR', 'Fr', '19:00', '20:30']],
+    redes: ['https://www.instagram.com/caballitojiujitsuclub/'], telefono: '+541130594142' },
+  { id: 'ramos-mejia', nombre: 'Sede Ramos Mejía', calle: 'Gabriel Ardoino 430', localidad: 'Ramos Mejía', region: 'Buenos Aires',
+    clases: [['TU', 'Tu', '19:30', '21:00'], ['TH', 'Th', '19:30', '21:00']],
+    redes: ['https://www.instagram.com/haedojiujitsuclub/', 'https://www.facebook.com/p/Haedo-Jiu-Jitsu-Club-100057642211295/'] },
+];
+
+function calendario(sede) {
+  // Semana de referencia: lunes 2 de noviembre de 2026
+  const base = { MO: 2, TU: 3, WE: 4, TH: 5, FR: 6 };
+  const hora = (h) => h.replace(':', '') + '00';
+  const eventos = sede.clases.map(([dia, , ini, fin]) => [
+    'BEGIN:VEVENT', `UID:${sede.id}-${dia.toLowerCase()}@jitsuargentina.com.ar`, 'DTSTAMP:20261101T000000Z',
+    `DTSTART;TZID=America/Argentina/Buenos_Aires:202611${String(base[dia]).padStart(2, '0')}T${hora(ini)}`,
+    `DTEND;TZID=America/Argentina/Buenos_Aires:202611${String(base[dia]).padStart(2, '0')}T${hora(fin)}`,
+    `RRULE:FREQ=WEEKLY;BYDAY=${dia}`, `SUMMARY:Jiu Jitsu Japonés (${sede.nombre})`,
+    `LOCATION:${sede.calle}\\, ${sede.localidad}\\, ${sede.region}`, `URL:${SITIO}/`, 'END:VEVENT',
+  ].join('\r\n'));
+  return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Jiu Jitsu Japones Argentina//Clases//ES', 'CALSCALE:GREGORIAN',
+    `X-WR-CALNAME:Jiu Jitsu ${sede.nombre}`,
+    'BEGIN:VTIMEZONE', 'TZID:America/Argentina/Buenos_Aires', 'BEGIN:STANDARD', 'DTSTART:19700101T000000',
+    'TZOFFSETFROM:-0300', 'TZOFFSETTO:-0300', 'TZNAME:-03', 'END:STANDARD', 'END:VTIMEZONE',
+    ...eventos, 'END:VCALENDAR', ''].join('\r\n');
+}
+
+const ldSedes = SEDES.map((s) => ({
+  '@context': 'https://schema.org', '@type': 'SportsActivityLocation',
+  name: `Jiu Jitsu Japonés Argentina, ${s.nombre}`, url: `${SITIO}/`, image: `${SITIO}/assets/img/${s.id}.jpg`,
+  sport: 'Jiu Jitsu', ...(s.telefono ? { telephone: s.telefono } : {}), sameAs: s.redes,
+  parentOrganization: { '@type': 'Organization', name: 'The Jiu Jitsu Foundation', url: TJJF },
+  address: { '@type': 'PostalAddress', streetAddress: s.calle, addressLocality: s.localidad, addressRegion: s.region, addressCountry: 'AR' },
+  openingHoursSpecification: s.clases.map(([, d, ini, fin]) => ({
+    '@type': 'OpeningHoursSpecification', opens: ini, closes: fin,
+    dayOfWeek: `https://schema.org/${{ Mo: 'Monday', Tu: 'Tuesday', We: 'Wednesday', Th: 'Thursday', Fr: 'Friday' }[d]}`,
+  })),
+}));
+
+/* ---------- Preguntas frecuentes (respuestas tomadas del texto del sitio) ---------- */
+const PREGUNTAS = [
+  ['¿Hace falta ser fuerte o tener buen estado físico?', 'No. No es un sistema que se base en la fuerza física y por lo tanto es adecuado para personas de muy diferentes estaturas.'],
+  ['¿Es un deporte de competencia?', 'No es el objetivo. Las aplicaciones deportivas permiten practicar contra alguien que resiste, pero el objetivo primordial de quienes practican Jiu Jitsu no es ganar combates deportivos entre ellos. Nuestro estilo se clasifica como un sistema de Budo: defensa personal y también superación personal.'],
+  ['¿Qué se aprende?', 'Bloqueos, golpes, lances y retenciones, así como sus contraataques, para defenderse de una amplia variedad de ataques: desde un agarre de muñeca hasta un palo o un cuchillo.'],
+  ['Vengo de otra arte marcial, ¿puedo sumarme?', 'Sí. Muchos principiantes empiezan como una forma de defensa personal y otros provienen de otras artes marciales y quieren ver en qué consiste nuestro estilo.'],
+  ['¿Qué cubre el arancel?', 'Los gastos de funcionamiento del dojo, del club y de la organización, y los gastos del Sensei para llegar al dojo y viajar a eventos. La instrucción no se paga: todos los Sensei dan su tiempo libremente.'],
+  ['¿Cómo se pasa de grado?', 'Con un examen. Hay ocho grados Kyu, del cinturón blanco al marrón. En los dos primeros exámenes se puede aprobar con 0, 1, 2 o 3 mons; desde el 5° kyu solo se aprueba o no.'],
+];
+const ldFaq = { '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: PREGUNTAS.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) };
+
+/* ---------- Glosario ---------- */
+const GLOSARIO = [
+  ['dojo', 'Dojo', 'Sala de entrenamiento.'],
+  ['Sensei', 'Sensei', 'Instructor o maestro.'],
+  ['sempai', 'Sempai', 'Miembros destacados del dojo, con más experiencia.'],
+  ['kohai', 'Kohai', 'Miembros más jóvenes del dojo.'],
+  ['Kyu', 'Kyu', 'Grado de alumno. Son ocho, del 8° al 1°.'],
+  ['Dan', 'Dan', 'Grado de maestro: el cinturón negro.'],
+  ['Kata', 'Kata', 'Forma: una secuencia fija de técnicas.'],
+  ['mons', 'Mon', 'Cinta que va en el cinturón y muestra la nota del examen.'],
+  ['bokken', 'Bokken', 'Espada de madera.'],
+  ['tatame', 'Tatame o tatami', 'Colchoneta sobre la que se entrena.'],
+  ['Bushido', 'Bushido', 'El camino del guerrero.'],
+  ['budo|Budo', 'Budo', 'Artes marciales entendidas como camino de superación personal.'],
+  ['katana', 'Katana', 'Sable largo del Samurai.'],
+];
+function glosador() {
+  const usados = new Set();
+  return (html) => {
+    for (const [palabra, , def] of GLOSARIO) {
+      if (usados.has(palabra)) continue;
+      const re = new RegExp(`(^|[\\s(“])(${palabra})(?=[\\s.,;)”:]|$)`);
+      if (re.test(html)) {
+        usados.add(palabra);
+        html = html.replace(re, (_, a, b) => `${a}<span class="glosa" tabindex="0" data-def="${def}">${b}</span>`);
+      }
+    }
+    return html;
+  };
+}
+
+/* ---------- Plantilla ---------- */
+function cabeza({ archivo, titulo, descripcion, ld = [] }) {
   return `<title>${titulo}</title>
 <meta name="description" content="${descripcion}">
 <meta name="theme-color" content="#1A2342">
+<link rel="canonical" href="${SITIO}/${archivo === 'index.html' ? '' : archivo}">
+<meta property="og:type" content="website">
 <meta property="og:site_name" content="Jiu Jitsu Japonés Argentina">
 <meta property="og:title" content="${titulo}">
 <meta property="og:description" content="${descripcion}">
+<meta property="og:url" content="${SITIO}/${archivo === 'index.html' ? '' : archivo}">
+<meta property="og:image" content="${SITIO}/assets/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:locale" content="es_AR">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="assets/img/sol.svg" type="image/svg+xml">
 <link rel="stylesheet" href="css/fonts.css">
-<link rel="stylesheet" href="css/site.css">`;
+<link rel="stylesheet" href="css/site.css">
+${ld.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join('\n')}`;
 }
 
 function cuerpo({ archivo, contenido }) {
   const nav = MENU.map(([href, txt]) =>
     `<li><a href="${href}"${href === archivo ? ' aria-current="page"' : ''}>${txt}</a></li>`).join('');
-  return `<div class="obi" aria-hidden="true"></div>
+  const i = MENU.findIndex(([h]) => h === archivo);
+  const paso = (j, clase, rotulo) => MENU[j] ? `<a class="${clase}" href="${MENU[j][0]}"><span>${rotulo}</span>${MENU[j][1]}</a>` : '<span></span>';
+  const seguir = i > 0 ? `<nav class="seguir" aria-label="Seguir leyendo"><div class="caja">${paso(i - 1, 'antes', 'Anterior')}${paso(i + 1, 'despues', 'Siguiente')}</div></nav>` : '';
+  const barra = archivo === 'contacto.html' ? '' : `<a class="barra-wa" href="${WHATSAPP}">Escribir por WhatsApp</a>`;
+  return `<a class="saltar" href="#contenido">Ir al contenido</a>
+<div class="obi" aria-hidden="true"></div>
 <div class="obi-grado" aria-hidden="true">8° kyu, blanco</div>
 <header class="cabecera">
   <div class="caja">
@@ -44,14 +144,15 @@ function cuerpo({ archivo, contenido }) {
     <nav class="nav" id="nav" aria-label="Principal"><ul>${nav}</ul></nav>
   </div>
 </header>
-<main>
+<main id="contenido">
 ${contenido}
+${seguir}
 </main>
 <footer class="pie">
   <div class="caja">
     <div>
       <h2>Fundación Jiu Jitsu Argentina</h2>
-      <p>Parte de The Jiu Jitsu Foundation. Enseñamos Shorinji Kan Jiu Jitsu en Caballito y Ramos Mejía.</p>
+      <p>Parte de <a href="${TJJF}">The Jiu Jitsu Foundation</a>. Enseñamos Shorinji Kan Jiu Jitsu en Caballito y Ramos Mejía.</p>
     </div>
     <div>
       <h2>Caballito</h2>
@@ -78,6 +179,7 @@ ${contenido}
     </div>
   </div>
 </footer>
+${barra}
 <script src="js/site.js"></script>`;
 }
 
@@ -98,42 +200,98 @@ ${cuerpo(p)}
 function secciones(archivo, titulos, saltar = 1) {
   const lineas = leer(`content/${archivo}.txt`).split('\n').map((l) => l.trim()).filter(Boolean);
   const res = []; let act = null;
-  for (const l of lineas.slice(saltar)) {            // la primera línea es el título de la página
+  for (const l of lineas.slice(saltar)) {       // en algunas páginas la primera línea es el título
     if (titulos[l] !== undefined) { act = { titulo: titulos[l] || l, parrafos: [] }; res.push(act); }
     else { if (!act) { act = { titulo: null, parrafos: [] }; res.push(act); } act.parrafos.push(l); }
   }
   return res;
 }
-const parrafos = (ps) => ps.map((p) => `<p>${tipo(p)}</p>`).join('\n');
+const parrafos = (ps, g = (x) => x) => ps.map((p) => `<p>${g(tipo(p))}</p>`).join('\n');
 
 function titular({ kanji, sol, h1, bajada }) {
   const marca = sol ? `<img class="kanji-sol" src="assets/img/sol.svg" alt="" width="120" height="117">`
     : `<span class="kanji" lang="ja" aria-hidden="true">${kanji}</span>`;
   return `<div class="titular"><div class="caja">${marca}<div><h1>${h1}</h1>${bajada ? `<p>${bajada}</p>` : ''}</div></div></div>`;
 }
-function articulo(secs, extras = {}) {
+function articulo(secs, extras = {}, cola = '') {
+  const g = glosador();
   const conTitulo = secs.filter((s) => s.titulo);
   const indice = conTitulo.length > 1 ? `<nav class="indice" aria-label="En esta página"><h2>En esta página</h2><ol>${
     conTitulo.map((s) => `<li><a href="#${slug(s.titulo)}">${tipo(s.titulo)}</a></li>`).join('')}</ol></nav>` : '<div></div>';
-  const cuerpo = secs.map((s) => `<section${s.titulo ? ` id="${slug(s.titulo)}"` : ''}>
+  const texto = secs.map((s) => `<section${s.titulo ? ` id="${slug(s.titulo)}"` : ''}>
 ${s.titulo ? `<h2>${tipo(s.titulo)}</h2>` : ''}
 ${(extras[s.titulo]?.antes) || ''}
-${parrafos(s.parrafos)}
+${parrafos(s.parrafos, g)}
 ${(extras[s.titulo]?.despues) || ''}
 </section>`).join('\n');
-  return `<div class="articulo"><div class="caja">${indice}<div class="prosa">${cuerpo}</div></div></div>`;
+  return `<div class="articulo"><div class="caja">${indice}<div class="prosa">${texto}${cola}</div></div></div>`;
 }
+
+/* ---------- Grados: una sola lectura del texto para la página y la portada ---------- */
+const NUDO = leer('pages/nudo.svg');
+const COLOR = { Blanco: 'blanco', Amarillo: 'amarillo', Anaranjado: 'naranja', Verde: 'verde', Violeta: 'violeta', Celeste: 'celeste', Azul: 'azul', 'Marrón': 'marron' };
+const MONS = { amarillo: '#C8301E', naranja: '#21932E' };
+const IC = (d) => `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const ICONOS = {
+  botella: IC('<path d="M10 2h4v4l2.5 3.5V21a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1V9.500L10 6z"/><path d="M7.500 14h9"/>'),
+  rota: IC('<path d="M10 22h4v-4l2.500-3.500V7l-2 2.500L12.500 6 11 9.500 9 6.500 7.500 9v5.500L10 18z"/>'),
+  palo: IC('<path d="M4.500 19.500l15-15"/><path d="M3.500 18.500l2 2"/>'),
+  cuchillo: IC('<path d="M3 21l5.500-5.500"/><path d="M7 14l2.800 2.800"/><path d="M8.500 15.500C13 14 18.500 9 21 3c-6 2.500-11 8-12.500 12.500z"/>'),
+  bokken: IC('<path d="M3 21C8 18 16 11 21.500 3"/><path d="M5.200 17.200l2.400 2.400"/>'),
+  cadena: IC('<rect x="2.500" y="9" width="8" height="6" rx="3"/><rect x="8" y="9" width="8" height="6" rx="3"/><rect x="13.500" y="9" width="8" height="6" rx="3"/>'),
+  baston: IC('<path d="M9 22V7a4 4 0 0 1 8 0v1.500"/>'),
+};
+const DEFENSAS = {
+  7: [['botella', 'Defensa contra botella']], 6: [['palo', 'Defensa contra palo']],
+  5: [['cuchillo', 'Defensa contra cuchillo'], ['rota', 'Defensa contra botella rota']],
+  4: [['bokken', 'Defensa contra bokken'], ['cadena', 'Defensa contra cadena']],
+  2: [['baston', 'Defensa usando un bastón']],
+};
+const GRADOS = (() => {
+  const lineas = leer('content/grados.txt').split('\n').map((l) => l.trim()).filter(Boolean);
+  const lista = []; let g = null;
+  for (const l of lineas.slice(2)) {
+    const m = l.match(/^(\d)° Kyu - Cinturón (.+)$/);
+    if (m) { g = { n: +m[1], nombre: m[2].toLowerCase(), c: COLOR[m[2]], ps: [] }; lista.push(g); } else g.ps.push(l);
+  }
+  let suma = 0;
+  for (const x of lista) {
+    const m = x.ps[0].match(/(\d+) lances/);
+    x.lances = m ? +m[1] : 0; suma += x.lances; x.acumulados = suma;
+  }
+  lista.total = suma; lista.intro = lineas[1];
+  return lista;
+})();
+const barraLances = (x) => `<div class="lances"><div class="lances-pista" role="img" aria-label="${x.acumulados} de ${GRADOS.total} lances"><i style="width:${(x.acumulados / GRADOS.total * 100).toFixed(1)}%"></i></div>
+<p>${x.lances ? `<strong>${x.lances} lances nuevos</strong>, ${x.acumulados} de ${GRADOS.total} en total` : 'Todavía sin lances: se empieza por las caídas'}</p></div>`;
+const chips = (n) => (DEFENSAS[n] || []).length ? `<ul class="defensas">${DEFENSAS[n].map(([i, t]) => `<li>${ICONOS[i]}${t}</li>`).join('')}</ul>` : '';
 
 /* ---------- Páginas ---------- */
 const paginas = [];
 
 // Portada
-paginas.push({
-  archivo: 'index.html',
-  titulo: 'Jiu Jitsu Japonés Argentina',
-  descripcion: 'Jiu Jitsu Japonés en Caballito y Ramos Mejía. Una forma de defensa personal muy efectiva para hombres y mujeres, sin la necesidad de utilizar mucha fuerza.',
-  contenido: leer('pages/inicio.html'),
-});
+{
+  const g8 = GRADOS[0];
+  const datos = GRADOS.map((x) => ({ n: x.n, nombre: x.nombre, c: x.c, texto: x.ps[0], lances: x.lances, acumulados: x.acumulados, total: GRADOS.total, defensas: (DEFENSAS[x.n] || []).map(([, t]) => t) }));
+  const escalera = GRADOS.map((x, i) => `<li><span class="k">${x.n}° kyu</span><button type="button" class="cinta" style="--cinta:var(--c-${x.c})" data-kyu="${x.n}" aria-pressed="${i === 0}"><span>${x.nombre[0].toUpperCase() + x.nombre.slice(1)}</span></button></li>`).join('\n');
+  const panel = `<div class="grado-panel" id="grado-panel" style="--cinta:var(--c-${g8.c})" aria-live="polite">
+${NUDO}
+<h3 id="gp-titulo">${g8.n}° kyu, cinturón ${g8.nombre}</h3>
+<p id="gp-texto">${tipo(g8.ps[0])}</p>
+<div id="gp-lances">${barraLances(g8)}</div>
+<p><a id="gp-enlace" href="grados.html#kyu-${g8.n}">Ver el examen completo</a></p>
+</div>
+<script type="application/json" id="datos-grados">${JSON.stringify(datos)}</script>`;
+  const faq = PREGUNTAS.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('\n');
+  paginas.push({
+    archivo: 'index.html',
+    titulo: 'Jiu Jitsu Japonés Argentina',
+    descripcion: 'Jiu Jitsu Japonés en Caballito y Ramos Mejía. Una forma de defensa personal muy efectiva para hombres y mujeres, sin la necesidad de utilizar mucha fuerza.',
+    ld: [...ldSedes, ldFaq],
+    contenido: leer('pages/inicio.html').replace('<!--ESCALERA-->', escalera).replace('<!--PANEL-->', panel)
+      .replace('<!--FAQ-->', faq).replaceAll('{{WHATSAPP}}', WHATSAPP).replaceAll('{{TJJF}}', TJJF),
+  });
+}
 
 // La Fundación
 {
@@ -148,8 +306,9 @@ paginas.push({
     contenido: titular({ sol: true, h1: 'Fundación Jiu Jitsu Argentina', bajada: tipo(ps[0]) }) +
       `<div class="articulo"><div class="caja"><div></div><div class="prosa">
 <section><p class="entrada">${tipo(ps[1])}</p>${lista}</section>
-<section>${parrafos(ps.slice(2))}
-<p class="tras-lista"><a class="boton" href="index.html#sedes">Ver sedes y horarios</a></p></section>
+<section>${parrafos(ps.slice(2))}</section>
+${leer('pages/tjjf.html').replaceAll('{{TJJF}}', TJJF)}
+<section><p class="tras-lista" style="margin-top:0"><a class="boton" href="index.html#sedes">Ver sedes y horarios</a></p></section>
 </div></div></div>`,
   });
 }
@@ -159,7 +318,7 @@ paginas.push({
   const T3 = 'La Escuela de Shorinji Kan Jiu Jitsu y The Jiu Jitsu Foundation';
   const secs = secciones('historia', { 'Origenes del Jiu Jitsu': 'Orígenes del Jiu Jitsu', 'Evolución del Jiu Jitsu': '', [T3]: '' }, 0);
   const fig = (img, w, h, alt, pie) => `<figure class="figura"><img src="assets/img/${img}" width="${w}" height="${h}" alt="${alt}" loading="lazy"><figcaption>${pie}</figcaption></figure>`;
-  const linaje = `<aside class="linaje" aria-label="Linaje del estilo"><h3>De Tokio a Buenos Aires</h3><ol>
+  const linaje = `<aside class="linaje" style="margin:0 0 2rem" aria-label="Linaje del estilo"><h3>De Tokio a Buenos Aires</h3><ol>
 <li><span class="cuando">Fines de la década de 1940, Tokio</span><span class="quien">Riukiu Myura</span><span class="que">Jefe instructor de combate sin armas en la Academia de Policía de Tokio.</span></li>
 <li><span class="cuando">Década de 1950, Footscray, Australia</span><span class="quien">Matthew Komp</span><span class="que">Alumno de Myura. Funda una escuela cerca de Melbourne.</span></li>
 <li><span class="cuando">1967, Yorkshire, Reino Unido</span><span class="quien">Brian Graham</span><span class="que">Alumno de Komp. Abre su primer club y da forma al Shorinji Kan Jiu Jitsu.</span></li>
@@ -174,55 +333,65 @@ paginas.push({
       articulo(secs, {
         'Orígenes del Jiu Jitsu': { despues: fig('samurai-armadura.jpg', 320, 229, 'Samurai con armadura', 'Samurai con armadura.') + fig('jigoro-kano.jpg', 234, 320, 'Retrato de Jigoro Kano', 'Jigoro Kano, fundador del Judo y maestro de Jiu Jitsu.') },
         'Evolución del Jiu Jitsu': { despues: fig('samurai-luchando.jpg', 300, 233, 'Samurai luchando', 'Samurai luchando cuerpo a cuerpo.') },
-        [T3]: { antes: linaje.replace('<aside class="linaje"', '<aside class="linaje" style="margin:0 0 2rem"') },
+        [T3]: { antes: linaje },
       }),
   });
 }
 
 // Filosofía
 {
+  const TOG = 'Jiu Jitsu con finalidad no comercial: "On" y "Giri"';
   const secs = secciones('filosofia', {
     'Jiu Jitsu como un sistema de defensa personal': '', '¿Qué son los Artes Marciales?': '¿Qué son las Artes Marciales?',
-    'Sistemas de Bugei, Bujutsu y Budo': '', 'Jiu Jitsu como un "Do" (Camino)': '', 'Jiu Jitsu con finalidad no comercial: "On" y "Giri"': '',
+    'Sistemas de Bugei, Bujutsu y Budo': '', 'Jiu Jitsu como un "Do" (Camino)': '', [TOG]: '',
   }, 0);
+  const onGiri = `<figure class="on-giri" aria-label="Diagrama de On y Giri">
+<div class="og-nodo"><strong>Tus instructores</strong><span>Dan su tiempo libremente</span></div>
+<div class="og-flecha"><b>On</b><span>la deuda que recibís</span></div>
+<div class="og-nodo og-vos"><strong>Vos</strong><span>Practicás y aprendés</span></div>
+<div class="og-flecha"><b>Giri</b><span>cómo la devolvés</span></div>
+<div class="og-nodo"><strong>Tus alumnos</strong><span>Les enseñás lo aprendido</span></div>
+</figure>`;
+  const glosario = `<section id="palabras-del-dojo"><h2>Palabras del dojo</h2><dl class="glosario">${
+    GLOSARIO.map(([, t, d]) => `<div><dt>${t}</dt><dd>${d}</dd></div>`).join('')}</dl></section>`;
+  secs.push({ titulo: null, parrafos: [] });
+  let html = articulo(secs.slice(0, -1), { [TOG]: { antes: onGiri } }, glosario);
+  html = html.replace('</ol></nav>', '<li><a href="#palabras-del-dojo">Palabras del dojo</a></li></ol></nav>');
   paginas.push({
     archivo: 'filosofia.html',
     titulo: 'Filosofía | Jiu Jitsu Japonés Argentina',
     descripcion: 'Jiu Jitsu como sistema de defensa personal y como camino: budo, On y Giri, y el respeto mutuo en el dojo.',
-    contenido: titular({ kanji: '武道', h1: 'Filosofía', bajada: 'Una forma muy práctica de defensa personal y también un sistema de superación, que une la mente y el cuerpo.' }) + articulo(secs),
+    contenido: titular({ kanji: '武道', h1: 'Filosofía', bajada: 'Una forma muy práctica de defensa personal y también un sistema de superación, que une la mente y el cuerpo.' }) + html,
   });
 }
 
 // Grados
 {
-  const lineas = leer('content/grados.txt').split('\n').map((l) => l.trim()).filter(Boolean);
-  const intro = lineas[1];
-  const color = { Blanco: 'blanco', Amarillo: 'amarillo', Anaranjado: 'naranja', Verde: 'verde', Violeta: 'violeta', Celeste: 'celeste', Azul: 'azul', 'Marrón': 'marron' };
-  const oscuros = ['verde', 'violeta', 'azul', 'marron'];
-  const mons = { amarillo: '#C8301E', naranja: '#21932E' };
-  const grados = []; let g = null;
-  for (const l of lineas.slice(2)) {
-    const m = l.match(/^(\d)° Kyu - Cinturón (.+)$/);
-    if (m) { g = { n: m[1], nombre: m[2], c: color[m[2]], ps: [] }; grados.push(g); } else g.ps.push(l);
-  }
-  const items = grados.map((x) => {
+  const g = glosador();
+  const leyenda = `<div class="mons-leyenda" data-animar><h2>Cómo se lee la nota en el cinturón</h2><ul>${
+    [['Bueno', 0], ['Muy bueno', 1], ['Excelente', 2], ['Excepcional', 3]].map(([t, n]) =>
+      `<li><div class="cinta" style="--cinta:var(--c-amarillo)"><span class="mons" style="--mon:#C8301E">${'<i></i>'.repeat(n)}</span></div><strong>${n} ${n === 1 ? 'mon' : 'mons'}</strong>${t}</li>`).join('')}</ul>
+<p>Los mons se usan en los exámenes de 7° y 6° kyu. Desde el 5° kyu solo se aprueba o no.</p></div>`;
+  const items = GRADOS.map((x) => {
     const [primero, ...resto] = x.ps;
-    const tiras = mons[x.c] ? `<span class="mons" style="--mon:${mons[x.c]}" role="img" aria-label="Tres mons">${'<i></i>'.repeat(3)}</span>` : '';
-    return `<li class="grado" id="kyu-${x.n}">
+    const tiras = MONS[x.c] ? `<span class="mons" style="--mon:${MONS[x.c]}" role="img" aria-label="Tres mons">${'<i></i>'.repeat(3)}</span>` : '';
+    return `<li class="grado" id="kyu-${x.n}"${tiras ? ' data-animar' : ''}>
 <div class="grado-num">${x.n}°<small> kyu</small></div>
 <div><div class="cinta" style="--cinta:var(--c-${x.c})">${tiras}</div>
-<h2>Cinturón ${x.nombre.toLowerCase()}</h2>
-<p>${tipo(primero)}</p>
-${resto.map((p) => `<p class="nota">${tipo(p)}</p>`).join('\n')}</div></li>`;
+<h2>Cinturón ${x.nombre}</h2>
+<p>${g(tipo(primero))}</p>
+${chips(x.n)}
+${barraLances(x)}
+${resto.map((p) => `<p class="nota">${g(tipo(p))}</p>`).join('\n')}</div></li>`;
   }).join('\n');
   paginas.push({
     archivo: 'grados.html',
     titulo: 'Grados y cinturones | Jiu Jitsu Japonés Argentina',
     descripcion: 'Los ocho grados Kyu de Shorinji Kan Jiu Jitsu, del cinturón blanco al marrón, y qué se pide en cada examen.',
-    contenido: titular({ kanji: '帯', h1: 'Grados y cinturones', bajada: tipo(intro) }) +
+    contenido: titular({ kanji: '帯', h1: 'Grados y cinturones', bajada: g(tipo(GRADOS.intro)) }) +
       `<div class="articulo"><div class="caja"><nav class="indice" aria-label="Grados"><h2>Los ocho grados</h2><ol>${
-        grados.map((x) => `<li><a href="#kyu-${x.n}">${x.n}° kyu, ${x.nombre.toLowerCase()}</a></li>`).join('')}</ol></nav>
-<div class="prosa ancha"><ol class="grados">${items}</ol></div></div></div>`,
+        GRADOS.map((x) => `<li><a href="#kyu-${x.n}">${x.n}° kyu, ${x.nombre}</a></li>`).join('')}</ol></nav>
+<div class="prosa ancha">${leyenda}<ol class="grados">${items}</ol></div></div></div>`,
   });
 }
 
@@ -231,12 +400,14 @@ paginas.push({
   archivo: 'contacto.html',
   titulo: 'Contacto | Jiu Jitsu Japonés Argentina',
   descripcion: 'Escribinos para venir a una clase de Jiu Jitsu Japonés en Caballito o Ramos Mejía.',
-  contenido: titular({ kanji: '柔術', h1: 'Contacto', bajada: 'Contanos de qué barrio sos y si ya practicaste algún arte marcial. Te decimos a qué clase venir.' }) + leer('pages/contacto.html'),
+  contenido: titular({ kanji: '柔術', h1: 'Contacto', bajada: 'Contanos de qué barrio sos y si ya practicaste algún arte marcial. Te decimos a qué clase venir.' }) +
+    leer('pages/contacto.html').replaceAll('{{WHATSAPP}}', WHATSAPP),
 });
 
 /* ---------- Escritura ---------- */
 fs.rmSync(dist, { recursive: true, force: true });
-fs.mkdirSync(dist, { recursive: true });
+fs.mkdirSync(path.join(dist, 'calendario'), { recursive: true });
 for (const d of ['css', 'js', 'assets']) fs.cpSync(path.join(src, d), path.join(dist, d), { recursive: true });
+for (const s of SEDES) fs.writeFileSync(path.join(dist, 'calendario', `${s.id}.ics`), calendario(s));
 for (const p of paginas) fs.writeFileSync(path.join(dist, p.archivo), completa(p));
-console.log('Listo:', paginas.map((p) => p.archivo).join(', '));
+console.log('Listo:', paginas.map((p) => p.archivo).join(', '), '| lances:', GRADOS.map((x) => x.acumulados).join(' '));
