@@ -1,0 +1,41 @@
+<div class="caja contacto-grilla">
+  <div class="directo">
+    <h2>Hablá directo con cada sede</h2>
+    <div class="directo-sede">
+      <h3>Caballito</h3>
+      <p>Sensei Richard Robinson. Lunes, miércoles y viernes.</p>
+      <p class="numero">+54 11 3059-4142</p>
+      <div class="redes">
+        <a class="boton" href="https://wa.me/541130594142">Abrir WhatsApp</a>
+        <a class="boton boton-linea" href="https://www.instagram.com/caballitojiujitsuclub/">Instagram</a>
+      </div>
+    </div>
+    <div class="directo-sede">
+      <h3>Ramos Mejía</h3>
+      <p>Sensei José María Vaquer. Martes y jueves.</p>
+      <div class="redes">
+        <a class="boton" href="https://www.instagram.com/haedojiujitsuclub/">Instagram</a>
+        <a class="boton boton-linea" href="https://www.facebook.com/p/Haedo-Jiu-Jitsu-Club-100057642211295/">Facebook</a>
+      </div>
+    </div>
+  </div>
+
+  <form class="formulario" id="form-contacto">
+    <h2>Dejanos un mensaje</h2>
+    <p class="trampa" aria-hidden="true"><label for="c-sitio">No completar</label><input id="c-sitio" name="sitio" type="text" tabindex="-1" autocomplete="off"></p>
+    <div class="campo">
+      <label for="c-nombre">Nombre</label>
+      <input id="c-nombre" name="nombre" type="text" autocomplete="name" required>
+    </div>
+    <div class="campo">
+      <label for="c-email">Email</label>
+      <input id="c-email" name="email" type="email" autocomplete="email" required>
+    </div>
+    <div class="campo">
+      <label for="c-mensaje">Mensaje</label>
+      <textarea id="c-mensaje" name="mensaje" required></textarea>
+    </div>
+    <button class="boton" type="submit">Enviar mensaje</button>
+    <p class="estado" id="form-estado" role="status" hidden></p>
+  </form>
+</div>
