@@ -1,0 +1,45 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Jiu Jitsu Japones Argentina//Clases//ES
+CALSCALE:GREGORIAN
+X-WR-CALNAME:Jiu Jitsu Sede Caballito
+BEGIN:VTIMEZONE
+TZID:America/Argentina/Buenos_Aires
+BEGIN:STANDARD
+DTSTART:19700101T000000
+TZOFFSETFROM:-0300
+TZOFFSETTO:-0300
+TZNAME:-03
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:caballito-mo@jitsuargentina.com.ar
+DTSTAMP:20261101T000000Z
+DTSTART;TZID=America/Argentina/Buenos_Aires:20261102T190000
+DTEND;TZID=America/Argentina/Buenos_Aires:20261102T203000
+RRULE:FREQ=WEEKLY;BYDAY=MO
+SUMMARY:Jiu Jitsu Japonés (Sede Caballito)
+LOCATION:General Manuel A. Rodríguez 1191\, Caballito\, Ciudad Autónoma de Buenos Aires
+URL:https://alannav-x.github.io/jitsu-argentina/
+END:VEVENT
+BEGIN:VEVENT
+UID:caballito-we@jitsuargentina.com.ar
+DTSTAMP:20261101T000000Z
+DTSTART;TZID=America/Argentina/Buenos_Aires:20261104T183000
+DTEND;TZID=America/Argentina/Buenos_Aires:20261104T200000
+RRULE:FREQ=WEEKLY;BYDAY=WE
+SUMMARY:Jiu Jitsu Japonés (Sede Caballito)
+LOCATION:General Manuel A. Rodríguez 1191\, Caballito\, Ciudad Autónoma de Buenos Aires
+URL:https://alannav-x.github.io/jitsu-argentina/
+END:VEVENT
+BEGIN:VEVENT
+UID:caballito-fr@jitsuargentina.com.ar
+DTSTAMP:20261101T000000Z
+DTSTART;TZID=America/Argentina/Buenos_Aires:20261106T190000
+DTEND;TZID=America/Argentina/Buenos_Aires:20261106T203000
+RRULE:FREQ=WEEKLY;BYDAY=FR
+SUMMARY:Jiu Jitsu Japonés (Sede Caballito)
+LOCATION:General Manuel A. Rodríguez 1191\, Caballito\, Ciudad Autónoma de Buenos Aires
+URL:https://alannav-x.github.io/jitsu-argentina/
+END:VEVENT
+END:VCALENDAR

@@ -1,0 +1,35 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Jiu Jitsu Japones Argentina//Clases//ES
+CALSCALE:GREGORIAN
+X-WR-CALNAME:Jiu Jitsu Sede Ramos Mejía
+BEGIN:VTIMEZONE
+TZID:America/Argentina/Buenos_Aires
+BEGIN:STANDARD
+DTSTART:19700101T000000
+TZOFFSETFROM:-0300
+TZOFFSETTO:-0300
+TZNAME:-03
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:ramos-mejia-tu@jitsuargentina.com.ar
+DTSTAMP:20261101T000000Z
+DTSTART;TZID=America/Argentina/Buenos_Aires:20261103T193000
+DTEND;TZID=America/Argentina/Buenos_Aires:20261103T210000
+RRULE:FREQ=WEEKLY;BYDAY=TU
+SUMMARY:Jiu Jitsu Japonés (Sede Ramos Mejía)
+LOCATION:Gabriel Ardoino 430\, Ramos Mejía\, Buenos Aires
+URL:https://alannav-x.github.io/jitsu-argentina/
+END:VEVENT
+BEGIN:VEVENT
+UID:ramos-mejia-th@jitsuargentina.com.ar
+DTSTAMP:20261101T000000Z
+DTSTART;TZID=America/Argentina/Buenos_Aires:20261105T193000
+DTEND;TZID=America/Argentina/Buenos_Aires:20261105T210000
+RRULE:FREQ=WEEKLY;BYDAY=TH
+SUMMARY:Jiu Jitsu Japonés (Sede Ramos Mejía)
+LOCATION:Gabriel Ardoino 430\, Ramos Mejía\, Buenos Aires
+URL:https://alannav-x.github.io/jitsu-argentina/
+END:VEVENT
+END:VCALENDAR
