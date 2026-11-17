@@ -12,10 +12,13 @@ const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, 
 const tipo = (s) => esc(s).replace(/"([^"]+)"/g, '“$1”').replace(/'(On|Giri)'/g, '‘$1’');
 const slug = (s) => s.toLowerCase().normalize('NFD').replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, '-').slice(0, 40);
 
-const SITIO = 'https://jitsuargentina.com.ar';
+// SITIO: dominio donde se publica (para enlaces canónicos y la imagen al compartir).
+// Para una demo: SITIO=https://usuario.github.io/repo DEMO=1 node build.mjs
+const SITIO = (process.env.SITIO || 'https://jitsuargentina.com.ar').replace(/\/$/, '');
+const DEMO = process.env.DEMO === '1';
 const WA_TEXTO = encodeURIComponent('Hola, quiero probar una clase de Jiu Jitsu en Caballito.');
 const WHATSAPP = `https://wa.me/541130594142?text=${WA_TEXTO}`;
-const LOGIN = `${SITIO}/login`;
+const LOGIN = 'https://jitsuargentina.com.ar/login';
 const TJJF = 'https://www.jitsufoundation.org/';
 const MENU = [
   ['index.html', 'Sedes y horarios'], ['fundacion.html', 'La Fundación'], ['historia.html', 'Historia'],
@@ -109,7 +112,7 @@ function glosador() {
 function cabeza({ archivo, titulo, descripcion, ld = [] }) {
   return `<title>${titulo}</title>
 <meta name="description" content="${descripcion}">
-<meta name="theme-color" content="#1A2342">
+<meta name="theme-color" content="#1A2342">${DEMO ? '\n<meta name="robots" content="noindex, nofollow">' : ''}
 <link rel="canonical" href="${SITIO}/${archivo === 'index.html' ? '' : archivo}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Jiu Jitsu Japonés Argentina">
