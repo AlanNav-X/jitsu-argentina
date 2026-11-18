@@ -8,7 +8,7 @@ Sitio web de la Fundación Jiu Jitsu Argentina, el grupo de Shorinji Kan Jiu Jit
 
 - **Sedes y horarios:** dojos de Caballito y Ramos Mejía, con sensei, dirección, días de clase y la próxima clase según la hora de Buenos Aires.
 - **Cinturones:** carrusel del blanco al marrón en la portada, con flechas, deslizamiento y teclado.
-- **Grados:** los ocho grados kyu con los requisitos de cada examen y las defensas que se incorporan, un cinturón lateral sincronizado con el kyu en pantalla y la explicación de los mons de 7° y 6° kyu.
+- **Grados:** los ocho grados kyu con los requisitos de cada examen, los conocimientos y defensas que se incorporan, y la explicación de los mon de 7° y 6° kyu.
 - **La Fundación, Historia y Filosofía:** el origen del estilo, el linaje de Tokio a Buenos Aires, On y Giri, y un glosario de términos del dojo.
 - **Preguntas frecuentes y contacto:** formulario, WhatsApp y redes de cada sede, y las clases en formato de calendario.
 

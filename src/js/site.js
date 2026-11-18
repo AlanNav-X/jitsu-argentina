@@ -70,38 +70,12 @@
 
   var sinMovimiento = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---------- Obi: aparece solo en la sección de grados y marca el kyu activo ---------- */
-  var obi = document.querySelector('.obi');
-  var obiRotulo = document.querySelector('.obi-grado');
-  var obiEnlaces = obi ? Array.prototype.slice.call(obi.querySelectorAll('a[data-kyu]')) : [];
-  function marcarObi(kyu) {
-    obiEnlaces.forEach(function (a) {
-      var activo = a.dataset.kyu === String(kyu);
-      a.classList.toggle('activa', activo);
-      if (activo) {
-        a.setAttribute('aria-current', 'true');
-        if (obiRotulo) obiRotulo.textContent = a.getAttribute('aria-label');
-      } else {
-        a.removeAttribute('aria-current');
-      }
-    });
-  }
-  function vigilarZona(zona) {
-    if (!obi || !zona) return;
-    if (!('IntersectionObserver' in window)) { obi.classList.add('visible'); return; }
-    new IntersectionObserver(function (e) {
-      obi.classList.toggle('visible', e[0].isIntersecting);
-    }, { rootMargin: '-15% 0px -15% 0px' }).observe(zona);
-  }
-
-  /* ---------- Página de grados: obi e índice sincronizados con el kyu en pantalla ---------- */
+  /* ---------- Página de grados: el índice marca el kyu en pantalla ---------- */
   var listaKyus = document.querySelector('[data-kyus]');
   if (listaKyus) {
-    vigilarZona(listaKyus);
     var kyus = Array.prototype.slice.call(listaKyus.querySelectorAll('.grado[data-kyu]'));
     var indiceKyu = Array.prototype.slice.call(document.querySelectorAll('.indice a[href^="#kyu-"]'));
     var marcarKyu = function (kyu) {
-      marcarObi(kyu);
       indiceKyu.forEach(function (a) { a.classList.toggle('activa', a.getAttribute('href') === '#kyu-' + kyu); });
     };
     marcarKyu(kyus[0].dataset.kyu);
@@ -115,8 +89,8 @@
       }, { rootMargin: '-35% 0px -60% 0px' });
       kyus.forEach(function (k) { vigia.observe(k); });
     }
-    // Al tocar un tramo del obi o del índice, marcarlo enseguida (el scroll lo confirma)
-    obiEnlaces.concat(indiceKyu).forEach(function (a) {
+    // Al tocar un kyu del índice, marcarlo enseguida (el scroll lo confirma)
+    indiceKyu.forEach(function (a) {
       a.addEventListener('click', function () { marcarKyu(a.getAttribute('href').replace(/.*#kyu-/, '')); });
     });
   }
@@ -153,7 +127,6 @@
       siguiente.disabled = i === diapos.length - 1;
       var d = diapos[i];
       d.classList.remove('anudar'); void d.offsetWidth; d.classList.add('anudar');
-      marcarObi(d.dataset.kyu);
     };
     var ir = function (i) {
       i = Math.max(0, Math.min(diapos.length - 1, i));
@@ -178,17 +151,7 @@
       else if (e.key === 'Home') { e.preventDefault(); ir(0); }
       else if (e.key === 'End') { e.preventDefault(); ir(diapos.length - 1); }
     });
-    // El obi de la portada maneja el carrusel en vez de cambiar de página
-    obiEnlaces.forEach(function (a) {
-      a.addEventListener('click', function (e) {
-        var j = diapos.findIndex(function (d) { return d.dataset.kyu === a.dataset.kyu; });
-        if (j < 0) return;
-        e.preventDefault();
-        ir(j);
-      });
-    });
     mostrar(0);
-    vigilarZona(carrusel.closest('[data-zona-obi]'));
   }
 
   /* ---------- Formulario de contacto ---------- */

@@ -131,7 +131,7 @@ function cabeza({ archivo, titulo, descripcion, ld = [] }) {
 ${ld.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join('\n')}`;
 }
 
-function cuerpo({ archivo, contenido, obi: zonaObi }) {
+function cuerpo({ archivo, contenido }) {
   const nav = MENU.map(([href, txt]) =>
     `<li><a href="${href}"${href === archivo ? ' aria-current="page"' : ''}>${txt}</a></li>`).join('');
   const i = MENU.findIndex(([h]) => h === archivo);
@@ -139,7 +139,7 @@ function cuerpo({ archivo, contenido, obi: zonaObi }) {
   const seguir = i > 0 ? `<nav class="seguir" aria-label="Seguir leyendo"><div class="caja">${paso(i - 1, 'antes', 'Anterior')}${paso(i + 1, 'despues', 'Siguiente')}</div></nav>` : '';
   const barra = archivo === 'contacto.html' ? '' : `<a class="barra-wa" href="${WHATSAPP}">Escribir por WhatsApp</a>`;
   return `<a class="saltar" href="#contenido">Ir al contenido</a>
-${zonaObi ? obi(zonaObi) : ''}<header class="cabecera">
+<header class="cabecera">
   <div class="caja">
     <a class="marca" href="index.html"><img src="assets/img/sol.svg" alt="" width="40" height="40">Jiu Jitsu Japonés<br>Argentina</a>
     <button class="menu-boton" type="button" aria-expanded="false" aria-controls="nav">Menú</button>
@@ -276,13 +276,15 @@ const ICONOS = {
   cuchillo: IC('<path d="M3 21l5.500-5.500"/><path d="M7 14l2.800 2.800"/><path d="M8.500 15.500C13 14 18.500 9 21 3c-6 2.500-11 8-12.500 12.500z"/>'),
   bokken: IC('<path d="M3 21C8 18 16 11 21.500 3"/><path d="M5.200 17.200l2.400 2.400"/>'),
   cadena: IC('<rect x="2.500" y="9" width="8" height="6" rx="3"/><rect x="8" y="9" width="8" height="6" rx="3"/><rect x="13.500" y="9" width="8" height="6" rx="3"/>'),
-  baston: IC('<path d="M9 22V7a4 4 0 0 1 8 0v1.500"/>'),
+  auxilios: IC('<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M12 7.500v9M7.500 12h9"/>'),
+  multiples: IC('<circle cx="12" cy="6.500" r="2.500"/><path d="M7.500 20v-3a4.500 4.500 0 0 1 9 0v3"/><circle cx="4.500" cy="9.500" r="1.800"/><path d="M1.500 20v-2.200a3 3 0 0 1 4-2.800"/><circle cx="19.500" cy="9.500" r="1.800"/><path d="M22.500 20v-2.200a3 3 0 0 0-4-2.800"/>'),
 };
 const DEFENSAS = {
   7: [['botella', 'Defensa contra botella']], 6: [['palo', 'Defensa contra palo']],
   5: [['cuchillo', 'Defensa contra cuchillo'], ['rota', 'Defensa contra botella rota']],
   4: [['bokken', 'Defensa contra bokken'], ['cadena', 'Defensa contra cadena']],
-  2: [['baston', 'Defensa usando un bastón']],
+  3: [['multiples', 'Defensa contra atacantes múltiples']],
+  2: [['auxilios', 'Conocimientos de primeros auxilios']],
 };
 const GRADOS = (() => {
   const lineas = leer('content/grados.txt').split('\n').map((l) => l.trim()).filter(Boolean);
@@ -296,21 +298,12 @@ const GRADOS = (() => {
 })();
 const chips = (n) => (DEFENSAS[n] || []).length ? `<ul class="defensas">${DEFENSAS[n].map(([i, t]) => `<li>${ICONOS[i]}${t}</li>`).join('')}</ul>` : '';
 
-/* ---------- Obi: cinturón segmentado, del blanco al marrón ---------- */
-function obi(zona) {
-  const destino = zona === 'grados' ? '' : 'grados.html';
-  return `<nav class="obi" aria-label="Grados, del blanco al marrón">${GRADOS.map((x) =>
-    `<a href="${destino}#kyu-${x.n}" data-kyu="${x.n}" style="--seg:var(--c-${x.c})" aria-label="${x.n}° kyu, cinturón ${x.nombre}"></a>`).join('')}</nav>
-<div class="obi-grado" aria-hidden="true"></div>`;
-}
-
 /* ---------- Mons (solo 7° y 6° kyu) ----------
    Fuente: texto de grados del sitio de la Fundación Jiu Jitsu Argentina.
-   Lo que no figura ahí ni en el sitio público de The Jiu Jitsu Foundation queda marcado como pendiente. */
+   El 7° kyu nombra dos colores posibles (rojos o anaranjados), por eso la muestra es mitad y mitad. */
 const MONS = {
-  7: { color: 'rojos o anaranjados', tono: 'linear-gradient(#C8301E 50%, #DD792F 50%)',
-       pendiente: ['Si los mons de este grado son rojos o anaranjados: el texto original nombra los dos colores.', 'En qué parte del cinturón se colocan.'] },
-  6: { color: 'verdes', tono: '#21932E', pendiente: ['En qué parte del cinturón se colocan.'] },
+  7: { color: 'rojos o anaranjados', tono: 'linear-gradient(#C8301E 50%, #DD792F 50%)' },
+  6: { color: 'verdes', tono: '#21932E' },
 };
 const NOTAS = [['Bueno', 0], ['Muy bueno', 1], ['Excelente', 2], ['Excepcional', 3]];
 function panelMons(n) {
@@ -320,7 +313,6 @@ function panelMons(n) {
 <p>Los mons son cintas que se colocan en el cinturón al aprobar el examen y muestran la nota. En este grado son <span class="color-mon" style="--mon:${m.tono}"></span>${m.color}.</p>
 <ul class="mons-lista">${NOTAS.map(([nota, k]) => `<li><span class="tiras${k ? '' : ' ninguna'}" style="--mon:${m.tono}">${'<i></i>'.repeat(k)}</span><strong>${k} ${k === 1 ? 'mon' : 'mons'}</strong><span>${nota}</span></li>`).join('')}</ul>
 <p>Desde el 5° kyu no hay mons: el examen se aprueba o no.</p>
-<div class="pendiente"><strong>Pendiente de confirmar con The Jiu Jitsu Foundation</strong><ul>${m.pendiente.map((x) => `<li>${x}</li>`).join('')}</ul></div>
 </aside>`;
 }
 
@@ -349,7 +341,6 @@ ${GRADOS.map((x, i) => `<article class="diapo" id="cinturon-${x.n}" data-kyu="${
     titulo: 'Jiu Jitsu Japonés Argentina',
     descripcion: 'Jiu Jitsu Japonés en Caballito y Ramos Mejía. Una forma de defensa personal muy efectiva para hombres y mujeres, sin la necesidad de utilizar mucha fuerza.',
     ld: [...ldSedes, ldFaq],
-    obi: 'portada',
     contenido: leer('pages/inicio.html').replace('<!--KANJI-->', pincel('柔術')).replace('<!--CARRUSEL-->', carrusel)
       .replace('<!--FAQ-->', faq).replaceAll('{{WHATSAPP}}', WHATSAPP).replaceAll('{{TJJF}}', TJJF),
   });
@@ -440,7 +431,7 @@ ${leer('pages/tjjf.html').replaceAll('{{TJJF}}', TJJF)}
 <p>${g(tipo(primero))}</p>
 ${chips(x.n)}
 ${resto.map((p) => `<p class="nota">${g(tipo(p))}</p>`).join('\n')}
-${mons ? `<button type="button" class="mons-boton" aria-expanded="false" aria-controls="mons-${x.n}">Qué significan los mons</button>` : ''}
+${mons ? `<button type="button" class="mons-boton" aria-expanded="false" aria-controls="mons-${x.n}" aria-label="Mon: qué significan en el ${x.n}° kyu">Mon</button>` : ''}
 </div>
 ${mons ? panelMons(x.n) : ''}
 </li>`;
@@ -449,7 +440,6 @@ ${mons ? panelMons(x.n) : ''}
     archivo: 'grados.html',
     titulo: 'Grados y cinturones | Jiu Jitsu Japonés Argentina',
     descripcion: 'Los ocho grados Kyu de Shorinji Kan Jiu Jitsu, del cinturón blanco al marrón, y qué se pide en cada examen.',
-    obi: 'grados',
     contenido: titular({ kanji: '級', h1: 'Grados y cinturones', bajada: g(tipo(GRADOS.intro)) }) +
       `<div class="articulo grados-pagina"><div class="caja"><nav class="indice" aria-label="Grados"><ol>${
         GRADOS.map((x) => `<li><a href="#kyu-${x.n}">${x.n}° kyu, ${x.nombre}</a></li>`).join('')}</ol></nav>
