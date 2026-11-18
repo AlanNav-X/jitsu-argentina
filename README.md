@@ -7,7 +7,8 @@ Sitio web de la Fundación Jiu Jitsu Argentina, el grupo de Shorinji Kan Jiu Jit
 ## Contenido
 
 - **Sedes y horarios:** dojos de Caballito y Ramos Mejía, con sensei, dirección, días de clase y la próxima clase según la hora de Buenos Aires.
-- **Grados:** los ocho grados kyu, del cinturón blanco al marrón, con los requisitos de cada examen, los mons y las defensas que se incorporan.
+- **Cinturones:** carrusel del blanco al marrón en la portada, con flechas, deslizamiento y teclado.
+- **Grados:** los ocho grados kyu con los requisitos de cada examen y las defensas que se incorporan, un cinturón lateral sincronizado con el kyu en pantalla y la explicación de los mons de 7° y 6° kyu.
 - **La Fundación, Historia y Filosofía:** el origen del estilo, el linaje de Tokio a Buenos Aires, On y Giri, y un glosario de términos del dojo.
 - **Preguntas frecuentes y contacto:** formulario, WhatsApp y redes de cada sede, y las clases en formato de calendario.
 
@@ -47,8 +48,11 @@ build.mjs    genera dist/
 | Horarios para Google y el calendario | `SEDES` en `build.mjs` |
 | Preguntas frecuentes y glosario | `PREGUNTAS` y `GLOSARIO` en `build.mjs` |
 | Textos de las páginas | `src/content/*.txt` |
+| Información de los mons | `MONS` en `build.mjs` |
+| Kanji de los encabezados | `src/content/trazos.json` (contornos y orden de trazos) |
 
 ## Créditos
 
 Textos y fotos: Fundación Jiu Jitsu Argentina, con autorización.
 Tipografías: Shippori Mincho B1 y Zen Kaku Gothic New, bajo licencia SIL Open Font License.
+Trazos de los kanji: [hanzi-writer-data](https://github.com/chanind/hanzi-writer-data), derivados de las fuentes de Arphic Technology, bajo Arphic Public License (`licencias/ARPHICPL.txt`).
