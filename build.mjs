@@ -430,7 +430,7 @@ ${leer('pages/tjjf.html').replaceAll('{{TJJF}}', TJJF)}
 <h2>Cinturón ${x.nombre}</h2>
 <p>${g(tipo(primero))}</p>
 ${chips(x.n)}
-${resto.filter((p) => !(mons && /\bmons?\b/i.test(p))).map((p) => `<p class="nota">${g(tipo(p))}</p>`).join('\n')}
+${resto.map((p) => p.replace(/^(Al pasar el examen te serán otorgados 0, 1, 2 o 3 "mons").*$/, '$1.')).map((p) => `<p class="nota">${g(tipo(p))}</p>`).join('\n')}
 ${mons ? `<button type="button" class="mons-boton" aria-expanded="false" aria-controls="mons-${x.n}">Qué significan los mons</button>` : ''}
 </div>
 ${mons ? panelMons(x.n) : ''}
