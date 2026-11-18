@@ -1,5 +1,4 @@
-/* Layout: contenido alineado a la izquierda sobre una grilla de 12 columnas; en la sección de grados, un cinturón (obi)
-   segmentado del blanco al marrón aparece en el borde izquierdo y marca el kyu que se está viendo;
+/* Layout: contenido alineado a la izquierda sobre una grilla de 12 columnas;
    el contenido se alinea a la izquierda sobre una grilla de 12 columnas, con el índigo como tinta y el celeste y el sol como acentos. */
 :root {
   color-scheme: light;
@@ -12,8 +11,7 @@
   --sol: #F6B40E;         /* Sol de Mayo */
   --tatami: #B7BB86;      /* paja igusa */
   --blanco: #FCFCF9;
-  --brillo: rgba(246, 180, 14, .42);  /* halo del Sol de Mayo para los horarios */
-  --brillo-0: rgba(246, 180, 14, .08);
+  --indigo-claro: #2C3866;  /* respiración del próximo día de clase */
 
   --c-blanco: #FCFCF9; --c-amarillo: #FFD91D; --c-naranja: #DD792F; --c-verde: #21932E;
   --c-violeta: #5E3E8C; --c-celeste: #A6C7ED; --c-azul: #2D5DE2; --c-marron: #934D19;
@@ -27,10 +25,8 @@
   --t-4: 1.125rem;
   --t-chico: .9rem;
 
-  --obi: 10px;
   --ancho: 1180px;
 }
-@media (min-width: 900px) { :root { --obi: 22px; } }
 
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
@@ -63,39 +59,6 @@ p { margin: 0; }
   padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
 @media (min-width: 700px) { .caja { padding-left: max(40px, env(safe-area-inset-left, 0px)); padding-right: max(40px, env(safe-area-inset-right, 0px)); } }
-
-/* ---------- El obi: solo en la sección de grados ---------- */
-.obi {
-  position: fixed; left: 0; top: 0; bottom: 0; width: var(--obi); z-index: 30;
-  display: flex; flex-direction: column;
-  border-right: 1px solid var(--indigo);
-  transition: transform .35s ease, visibility .35s;
-}
-.js .obi:not(.visible) { transform: translateX(-110%); visibility: hidden; }
-.obi a {
-  flex: 1; display: block; position: relative;
-  background-color: var(--seg);
-  background-image: repeating-linear-gradient(90deg, transparent 0 3px, rgba(26,35,66,.22) 3px 4px);
-  border-bottom: 1px solid rgba(26,35,66,.35);
-  transition: width .25s ease, box-shadow .25s ease;
-  width: 100%;
-}
-.obi a:last-child { border-bottom: 0; }
-.obi a:hover { width: calc(100% + 3px); }
-.obi a.activa { width: calc(100% + 5px); box-shadow: inset 0 0 0 2px var(--indigo), 3px 0 0 var(--indigo); z-index: 1; }
-.obi a:focus-visible { outline-offset: -3px; }
-.obi-grado { display: none; }
-@media (min-width: 900px) {
-  .obi a:hover { width: calc(100% + 6px); }
-  .obi a.activa { width: calc(100% + 12px); }
-  .obi-grado {
-    display: block; position: fixed; left: calc(var(--obi) + 20px); bottom: 14px; z-index: 30;
-    writing-mode: vertical-rl; transform: rotate(180deg);
-    font-size: .78rem; font-weight: 700; color: var(--indigo-medio); letter-spacing: .04em;
-    font-variant-numeric: tabular-nums; transition: opacity .35s;
-  }
-  .js .obi:not(.visible) + .obi-grado { opacity: 0; }
-}
 
 /* ---------- Cabecera ---------- */
 .cabecera {
@@ -154,19 +117,7 @@ p { margin: 0; }
 }
 
 /* Semana de clases */
-.semana {
-  background: var(--blanco); border: 1px solid var(--indigo); min-width: 0;
-  box-shadow: 10px 10px 0 var(--tatami), 0 0 22px 4px var(--brillo);
-}
-@media (prefers-reduced-motion: no-preference) {
-  .semana { animation: respirar 3.6s ease-in-out infinite; }
-  .semana li.proxima::before { animation: respirar-marca 3.6s ease-in-out infinite; }
-  @keyframes respirar {
-    0%, 100% { box-shadow: 10px 10px 0 var(--tatami), 0 0 6px 0 var(--brillo-0); }
-    50% { box-shadow: 10px 10px 0 var(--tatami), 0 0 30px 7px var(--brillo); }
-  }
-  @keyframes respirar-marca { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
-}
+.semana { background: var(--blanco); border: 1px solid var(--indigo); box-shadow: 10px 10px 0 var(--tatami); min-width: 0; }
 .semana-cabeza { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: 1rem 1.2rem; border-bottom: 1px solid var(--indigo); flex-wrap: wrap; }
 .semana-cabeza h2 { font-size: 1.25rem; }
 .semana-cabeza p { font-size: var(--t-chico); color: var(--indigo-medio); }
@@ -182,6 +133,12 @@ p { margin: 0; }
 .semana li.proxima { background: var(--indigo); color: var(--gi); }
 .semana li.proxima .sede { color: var(--celeste); }
 .semana li.proxima::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--sol); }
+@media (prefers-reduced-motion: no-preference) {
+  .semana li.proxima { animation: respirar 3.6s ease-in-out infinite; }
+  .semana li.proxima::before { animation: respirar-marca 3.6s ease-in-out infinite; }
+  @keyframes respirar { 0%, 100% { background-color: var(--indigo); } 50% { background-color: var(--indigo-claro); } }
+  @keyframes respirar-marca { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+}
 .semana .aviso { grid-column: 1 / -1; font-size: var(--t-chico); font-weight: 700; color: var(--sol); margin-bottom: .15rem; }
 
 /* ---------- Secciones ---------- */
@@ -422,15 +379,38 @@ picture { display: block; }
 /* ---------- Cinturón anudado ---------- */
 .nudo { width: 100%; height: auto; overflow: visible; }
 .nudo path { fill: var(--cinta, var(--c-blanco)); stroke: var(--indigo); stroke-width: 4; stroke-linejoin: round; transform-box: fill-box; transform-origin: center; }
+/* Anudado, con el timing original (banda 0-0,7 s; caídas 0,55 y 0,7 s; ajuste 1,05-1,45 s):
+   la banda se tensa desde el nudo hacia los extremos, las puntas caen por su peso desde el punto
+   donde salen del nudo y se asientan con un vaivén corto, y el nudo se ajusta apretando la tela. */
+.nudo { filter: drop-shadow(0 2px 0 rgba(26, 35, 66, .16)); }
 @media (prefers-reduced-motion: no-preference) {
-  .anudar .nudo path:nth-child(2) { animation: cenir .7s cubic-bezier(.6, 0, .2, 1) both; }
-  .anudar .nudo path:nth-child(5) { animation: caer .45s ease-out .55s both; transform-origin: 100% 0; }
-  .anudar .nudo path:nth-child(7) { animation: caer .45s ease-out .7s both; transform-origin: 0 0; }
+  .anudar .nudo path:nth-child(2) { animation: tensar .7s cubic-bezier(.6, 0, .2, 1) both; transform-origin: 50% 50%; }
+  .anudar .nudo path:nth-child(5) { animation: caer-izq .45s .55s both; transform-origin: 100% 0; }
+  .anudar .nudo path:nth-child(7) { animation: caer-der .45s .7s both; transform-origin: 0 0; }
   .anudar .nudo path:nth-child(1), .anudar .nudo path:nth-child(3), .anudar .nudo path:nth-child(4),
-  .anudar .nudo path:nth-child(6), .anudar .nudo path:nth-child(8) { animation: apretar .4s cubic-bezier(.3, 1.6, .5, 1) 1.05s both; }
-  @keyframes cenir { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(-10px); } }
-  @keyframes caer { from { opacity: 0; transform: scale(.2); } to { opacity: 1; transform: scale(1); } }
-  @keyframes apretar { from { opacity: 0; transform: scale(1.5); } to { opacity: 1; transform: scale(1); } }
+  .anudar .nudo path:nth-child(6), .anudar .nudo path:nth-child(8) { animation: ajustar .4s cubic-bezier(.25, .7, .3, 1) 1.05s both; }
+  @keyframes tensar {
+    from { clip-path: inset(0 48% 0 48%); transform: scaleY(1.08); }
+    to { clip-path: inset(-10px); transform: scaleY(1); }
+  }
+  @keyframes caer-izq {
+    0% { clip-path: inset(0 0 0 100%); transform: rotate(22deg); animation-timing-function: cubic-bezier(.5, 0, .9, .5); }
+    55% { clip-path: inset(-10px); transform: rotate(-4deg); animation-timing-function: cubic-bezier(.2, .5, .4, 1); }
+    80% { transform: rotate(1.5deg); }
+    100% { clip-path: inset(-10px); transform: rotate(0); }
+  }
+  @keyframes caer-der {
+    0% { clip-path: inset(0 100% 0 0); transform: rotate(-22deg); animation-timing-function: cubic-bezier(.5, 0, .9, .5); }
+    55% { clip-path: inset(-10px); transform: rotate(4deg); animation-timing-function: cubic-bezier(.2, .5, .4, 1); }
+    80% { transform: rotate(-1.5deg); }
+    100% { clip-path: inset(-10px); transform: rotate(0); }
+  }
+  @keyframes ajustar {
+    0% { opacity: 0; transform: scale(1.1, .9); }
+    35% { opacity: 1; }
+    70% { transform: scale(.97, 1.03); }
+    100% { opacity: 1; transform: scale(1); }
+  }
 }
 
 /* ---------- Carrusel de cinturones (portada) ---------- */
@@ -507,9 +487,6 @@ picture { display: block; }
 .tiras i { display: block; width: 9px; background: var(--mon); border: 1px solid var(--indigo); }
 
 .color-mon { display: inline-block; width: .9em; height: .9em; vertical-align: -.1em; border: 1px solid var(--indigo); background: var(--mon); margin-right: .2em; }
-.pendiente { margin-top: 1rem; border: 1px dashed var(--indigo-medio); padding: .7rem .8rem; color: var(--indigo-medio); }
-.pendiente strong { display: block; color: var(--indigo); margin-bottom: .25rem; }
-.pendiente ul { margin: 0; padding-left: 1.1rem; }
 @media (min-width: 1000px) {
   .articulo.grados-pagina .caja { grid-template-columns: 11rem minmax(0, 1fr); }
 }
