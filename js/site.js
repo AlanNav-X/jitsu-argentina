@@ -12,34 +12,6 @@
     });
   }
 
-  /* ---------- El obi cambia de grado al avanzar la página ---------- */
-  var GRADOS = [
-    ['8° kyu, blanco', '--c-blanco'], ['7° kyu, amarillo', '--c-amarillo'],
-    ['6° kyu, anaranjado', '--c-naranja'], ['5° kyu, verde', '--c-verde'],
-    ['4° kyu, violeta', '--c-violeta'], ['3° kyu, celeste', '--c-celeste'],
-    ['2° kyu, azul', '--c-azul'], ['1° kyu, marrón', '--c-marron']
-  ];
-  var etiqueta = document.querySelector('.obi-grado');
-  var actual = -1;
-  function medirObi() {
-    var doc = document.documentElement;
-    var total = doc.scrollHeight - window.innerHeight;
-    var avance = total > 0 ? Math.min(1, Math.max(0, window.scrollY / total)) : 0;
-    var i = Math.min(GRADOS.length - 1, Math.floor(avance * GRADOS.length));
-    if (i === actual) return;
-    actual = i;
-    doc.style.setProperty('--grado', 'var(' + GRADOS[i][1] + ')');
-    if (etiqueta) etiqueta.textContent = GRADOS[i][0];
-  }
-  var pendiente = false;
-  window.addEventListener('scroll', function () {
-    if (pendiente) return;
-    pendiente = true;
-    requestAnimationFrame(function () { pendiente = false; medirObi(); });
-  }, { passive: true });
-  window.addEventListener('resize', medirObi);
-  medirObi();
-
   /* ---------- Próxima clase (hora de Buenos Aires) ---------- */
   function ahoraEnBuenosAires() {
     var partes = new Intl.DateTimeFormat('en-GB', {
@@ -83,7 +55,7 @@
 
   /* ---------- Índice: marca la sección que se está leyendo ---------- */
   var enlaces = Array.prototype.slice.call(document.querySelectorAll('.indice a[href^="#"]'));
-  if (enlaces.length && 'IntersectionObserver' in window) {
+  if (enlaces.length && !document.querySelector('[data-kyus]') && 'IntersectionObserver' in window) {
     var porId = {};
     enlaces.forEach(function (a) { porId[a.getAttribute('href').slice(1)] = a; });
     var visibles = {};
@@ -96,48 +68,127 @@
     Object.keys(porId).forEach(function (id) { var el = document.getElementById(id); if (el) espia.observe(el); });
   }
 
-  /* ---------- Animaciones que arrancan al entrar en pantalla (una sola vez) ---------- */
-  var animables = Array.prototype.slice.call(document.querySelectorAll('[data-animar], .grado-panel'));
-  if (animables.length && 'IntersectionObserver' in window) {
-    var vista = new IntersectionObserver(function (entradas) {
-      entradas.forEach(function (e) {
-        if (!e.isIntersecting) return;
-        e.target.classList.add(e.target.classList.contains('grado-panel') ? 'anudar' : 'en-vista');
-        vista.unobserve(e.target);
-      });
-    }, { threshold: 0.4 });
-    animables.forEach(function (el) { vista.observe(el); });
+  var sinMovimiento = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- Obi: aparece solo en la sección de grados y marca el kyu activo ---------- */
+  var obi = document.querySelector('.obi');
+  var obiRotulo = document.querySelector('.obi-grado');
+  var obiEnlaces = obi ? Array.prototype.slice.call(obi.querySelectorAll('a[data-kyu]')) : [];
+  function marcarObi(kyu) {
+    obiEnlaces.forEach(function (a) {
+      var activo = a.dataset.kyu === String(kyu);
+      a.classList.toggle('activa', activo);
+      if (activo) {
+        a.setAttribute('aria-current', 'true');
+        if (obiRotulo) obiRotulo.textContent = a.getAttribute('aria-label');
+      } else {
+        a.removeAttribute('aria-current');
+      }
+    });
+  }
+  function vigilarZona(zona) {
+    if (!obi || !zona) return;
+    if (!('IntersectionObserver' in window)) { obi.classList.add('visible'); return; }
+    new IntersectionObserver(function (e) {
+      obi.classList.toggle('visible', e[0].isIntersecting);
+    }, { rootMargin: '-15% 0px -15% 0px' }).observe(zona);
   }
 
-  /* ---------- Grados interactivos en la portada ---------- */
-  var panel = document.getElementById('grado-panel');
-  var datosEl = document.getElementById('datos-grados');
-  if (panel && datosEl) {
-    var datos = JSON.parse(datosEl.textContent);
-    var botones = Array.prototype.slice.call(document.querySelectorAll('.escalera button[data-kyu]'));
-    var mostrar = function (n) {
-      var g = datos.filter(function (d) { return d.n === n; })[0];
-      if (!g) return;
-      botones.forEach(function (b) { b.setAttribute('aria-pressed', String(+b.dataset.kyu === n)); });
-      panel.style.setProperty('--cinta', 'var(--c-' + g.c + ')');
-      document.getElementById('gp-titulo').textContent = g.n + '° kyu, cinturón ' + g.nombre;
-      document.getElementById('gp-texto').textContent = g.texto;
-      document.getElementById('gp-enlace').setAttribute('href', 'grados.html#kyu-' + g.n);
-      var pista = panel.querySelector('.lances-pista');
-      pista.setAttribute('aria-label', g.acumulados + ' de ' + g.total + ' lances');
-      pista.firstElementChild.style.width = (g.acumulados / g.total * 100).toFixed(1) + '%';
-      var p = panel.querySelector('.lances p');
-      p.textContent = '';
-      if (g.lances) {
-        var fuerte = document.createElement('strong');
-        fuerte.textContent = g.lances + ' lances nuevos';
-        p.appendChild(fuerte);
-        p.appendChild(document.createTextNode(', ' + g.acumulados + ' de ' + g.total + ' en total'));
-      } else {
-        p.textContent = 'Todavía sin lances: se empieza por las caídas';
-      }
+  /* ---------- Página de grados: obi e índice sincronizados con el kyu en pantalla ---------- */
+  var listaKyus = document.querySelector('[data-kyus]');
+  if (listaKyus) {
+    vigilarZona(listaKyus);
+    var kyus = Array.prototype.slice.call(listaKyus.querySelectorAll('.grado[data-kyu]'));
+    var indiceKyu = Array.prototype.slice.call(document.querySelectorAll('.indice a[href^="#kyu-"]'));
+    var marcarKyu = function (kyu) {
+      marcarObi(kyu);
+      indiceKyu.forEach(function (a) { a.classList.toggle('activa', a.getAttribute('href') === '#kyu-' + kyu); });
     };
-    botones.forEach(function (b) { b.addEventListener('click', function () { mostrar(+b.dataset.kyu); }); });
+    marcarKyu(kyus[0].dataset.kyu);
+    if ('IntersectionObserver' in window) {
+      var enPantalla = {};
+      var vigia = new IntersectionObserver(function (entradas) {
+        entradas.forEach(function (e) { enPantalla[e.target.dataset.kyu] = e.isIntersecting; });
+        for (var i = 0; i < kyus.length; i++) {
+          if (enPantalla[kyus[i].dataset.kyu]) { marcarKyu(kyus[i].dataset.kyu); break; }
+        }
+      }, { rootMargin: '-35% 0px -60% 0px' });
+      kyus.forEach(function (k) { vigia.observe(k); });
+    }
+    // Al tocar un tramo del obi o del índice, marcarlo enseguida (el scroll lo confirma)
+    obiEnlaces.concat(indiceKyu).forEach(function (a) {
+      a.addEventListener('click', function () { marcarKyu(a.getAttribute('href').replace(/.*#kyu-/, '')); });
+    });
+  }
+
+  /* ---------- Mons: panel a la derecha del kyu ---------- */
+  Array.prototype.slice.call(document.querySelectorAll('.mons-boton')).forEach(function (b) {
+    var panel = document.getElementById(b.getAttribute('aria-controls'));
+    if (!panel) return;
+    b.addEventListener('click', function () {
+      var abrir = b.getAttribute('aria-expanded') !== 'true';
+      b.setAttribute('aria-expanded', String(abrir));
+      panel.hidden = !abrir;
+    });
+  });
+
+  /* ---------- Carrusel de cinturones (portada) ---------- */
+  var carrusel = document.querySelector('[data-carrusel]');
+  if (carrusel) {
+    var pista = carrusel.querySelector('.carrusel-pista');
+    var diapos = Array.prototype.slice.call(pista.querySelectorAll('.diapo'));
+    var puntos = Array.prototype.slice.call(carrusel.querySelectorAll('[data-ir]'));
+    var anterior = carrusel.querySelector('[data-paso="-1"]');
+    var siguiente = carrusel.querySelector('[data-paso="1"]');
+    var actual = -1;
+    var mostrar = function (i) {
+      if (i === actual) return;
+      actual = i;
+      puntos.forEach(function (p, j) { if (j === i) p.setAttribute('aria-current', 'true'); else p.removeAttribute('aria-current'); });
+      diapos.forEach(function (d, j) {
+        d.setAttribute('aria-hidden', String(j !== i));
+        Array.prototype.slice.call(d.querySelectorAll('a')).forEach(function (a) { a.tabIndex = j === i ? 0 : -1; });
+      });
+      anterior.disabled = i === 0;
+      siguiente.disabled = i === diapos.length - 1;
+      var d = diapos[i];
+      d.classList.remove('anudar'); void d.offsetWidth; d.classList.add('anudar');
+      marcarObi(d.dataset.kyu);
+    };
+    var ir = function (i) {
+      i = Math.max(0, Math.min(diapos.length - 1, i));
+      pista.scrollTo({ left: diapos[i].offsetLeft - pista.offsetLeft, behavior: sinMovimiento ? 'auto' : 'smooth' });
+      mostrar(i);
+    };
+    var esperando = false;
+    pista.addEventListener('scroll', function () {
+      if (esperando) return;
+      esperando = true;
+      requestAnimationFrame(function () {
+        esperando = false;
+        mostrar(Math.round(pista.scrollLeft / pista.clientWidth));
+      });
+    }, { passive: true });
+    anterior.addEventListener('click', function () { ir(actual - 1); });
+    siguiente.addEventListener('click', function () { ir(actual + 1); });
+    puntos.forEach(function (p, j) { p.addEventListener('click', function () { ir(j); }); });
+    carrusel.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') { e.preventDefault(); ir(actual + 1); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); ir(actual - 1); }
+      else if (e.key === 'Home') { e.preventDefault(); ir(0); }
+      else if (e.key === 'End') { e.preventDefault(); ir(diapos.length - 1); }
+    });
+    // El obi de la portada maneja el carrusel en vez de cambiar de página
+    obiEnlaces.forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        var j = diapos.findIndex(function (d) { return d.dataset.kyu === a.dataset.kyu; });
+        if (j < 0) return;
+        e.preventDefault();
+        ir(j);
+      });
+    });
+    mostrar(0);
+    vigilarZona(carrusel.closest('[data-zona-obi]'));
   }
 
   /* ---------- Formulario de contacto ---------- */
