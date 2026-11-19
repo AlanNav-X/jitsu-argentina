@@ -154,6 +154,22 @@
     mostrar(0);
   }
 
+  /* ---------- Kanji que se dibujan al entrar en pantalla ---------- */
+  var porDibujar = Array.prototype.slice.call(document.querySelectorAll('[data-dibujar]'));
+  if (porDibujar.length) {
+    var dibujar = function (el) {
+      Array.prototype.slice.call(el.querySelectorAll('.en-espera')).forEach(function (k) { k.classList.remove('en-espera'); });
+    };
+    if ('IntersectionObserver' in window) {
+      var obs = new IntersectionObserver(function (entradas) {
+        entradas.forEach(function (e) { if (e.isIntersecting) { dibujar(e.target); obs.unobserve(e.target); } });
+      }, { threshold: 0.35 });
+      porDibujar.forEach(function (el) { obs.observe(el); });
+    } else {
+      porDibujar.forEach(dibujar);
+    }
+  }
+
   /* ---------- Aclaraciones subrayadas: se abren al tocar (o con Enter) y se cierran al tocar afuera ---------- */
   var glosas = Array.prototype.slice.call(document.querySelectorAll('.glosa'));
   var cerrarGlosas = function (salvo) { glosas.forEach(function (x) { if (x !== salvo) x.classList.remove('abierta'); }); };
