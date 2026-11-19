@@ -178,7 +178,7 @@
         form.reset();
       }).catch(function () {
         estado.className = 'estado error';
-        estado.textContent = 'El mensaje no salió. Revisá tu conexión y probá de nuevo, o escribinos por WhatsApp al +54 11 3059-4142.';
+        estado.textContent = 'El mensaje no salió. Revisá tu conexión y probá de nuevo, o escribinos por WhatsApp: Caballito +54 11 3059-4142, Ramos Mejía +54 9 11 6378-1362.';
         estado.hidden = false;
       }).then(function () {
         enviar.disabled = false;

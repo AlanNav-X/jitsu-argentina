@@ -18,6 +18,7 @@ const SITIO = (process.env.SITIO || 'https://jitsuargentina.com.ar').replace(/\/
 const DEMO = process.env.DEMO === '1';
 const WA_TEXTO = encodeURIComponent('Hola, quiero probar una clase de Jiu Jitsu en Caballito.');
 const WHATSAPP = `https://wa.me/541130594142?text=${WA_TEXTO}`;
+const WHATSAPP_RAMOS = `https://wa.me/5491163781362?text=${encodeURIComponent('Hola, quiero probar una clase de Jiu Jitsu en Ramos Mejía.')}`;
 const LOGIN = 'https://jitsuargentina.com.ar/login';
 const TJJF = 'https://www.jitsufoundation.org/';
 const MENU = [
@@ -32,7 +33,7 @@ const SEDES = [
     redes: ['https://www.instagram.com/caballitojiujitsuclub/'], telefono: '+541130594142' },
   { id: 'ramos-mejia', nombre: 'Sede Ramos Mejía', calle: 'Gabriel Ardoino 430', localidad: 'Ramos Mejía', region: 'Buenos Aires',
     clases: [['TU', 'Tu', '19:30', '21:00'], ['TH', 'Th', '19:30', '21:00']],
-    redes: ['https://www.instagram.com/haedojiujitsuclub/', 'https://www.facebook.com/p/Haedo-Jiu-Jitsu-Club-100057642211295/'] },
+    redes: ['https://www.instagram.com/haedojiujitsuclub/', 'https://www.facebook.com/p/Haedo-Jiu-Jitsu-Club-100057642211295/'], telefono: '+5491163781362' },
 ];
 
 function calendario(sede) {
@@ -168,6 +169,7 @@ ${seguir}
       <h2>Ramos Mejía</h2>
       <ul>
         <li>Gabriel Ardoino 430</li>
+        <li><a href="${WHATSAPP_RAMOS}">WhatsApp +54 9 11 6378-1362</a></li>
         <li><a href="https://www.instagram.com/haedojiujitsuclub/">Instagram</a></li>
         <li><a href="https://www.facebook.com/p/Haedo-Jiu-Jitsu-Club-100057642211295/">Facebook</a></li>
       </ul>
@@ -342,7 +344,7 @@ ${GRADOS.map((x, i) => `<article class="diapo" id="cinturon-${x.n}" data-kyu="${
     descripcion: 'Jiu Jitsu Japonés en Caballito y Ramos Mejía. Una forma de defensa personal muy efectiva para hombres y mujeres, sin la necesidad de utilizar mucha fuerza.',
     ld: [...ldSedes, ldFaq],
     contenido: leer('pages/inicio.html').replace('<!--KANJI-->', pincel('柔術')).replace('<!--CARRUSEL-->', carrusel)
-      .replace('<!--FAQ-->', faq).replaceAll('{{WHATSAPP}}', WHATSAPP).replaceAll('{{TJJF}}', TJJF),
+      .replace('<!--FAQ-->', faq).replaceAll('{{WHATSAPP}}', WHATSAPP).replaceAll('{{WHATSAPP_RAMOS}}', WHATSAPP_RAMOS).replaceAll('{{TJJF}}', TJJF),
   });
 }
 
@@ -453,7 +455,7 @@ paginas.push({
   titulo: 'Contacto | Jiu Jitsu Japonés Argentina',
   descripcion: 'Escribinos para venir a una clase de Jiu Jitsu Japonés en Caballito o Ramos Mejía.',
   contenido: titular({ kanji: '柔術', h1: 'Contacto', bajada: 'Contanos de qué barrio sos y si ya practicaste algún arte marcial. Te decimos a qué clase venir.' }) +
-    leer('pages/contacto.html').replaceAll('{{WHATSAPP}}', WHATSAPP),
+    leer('pages/contacto.html').replaceAll('{{WHATSAPP}}', WHATSAPP).replaceAll('{{WHATSAPP_RAMOS}}', WHATSAPP_RAMOS),
 });
 
 /* ---------- Escritura ---------- */
