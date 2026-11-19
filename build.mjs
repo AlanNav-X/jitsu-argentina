@@ -233,9 +233,10 @@ const parrafos = (ps, g = (x) => x) => ps.map((p) => `<p>${g(tipo(p))}</p>`).joi
    un filtro agrega borde irregular, absorción en el papel y grano seco. */
 const TRAZOS = JSON.parse(leer('content/trazos.json'));
 let pincelN = 0;
-function pincel(texto, inicio = 0.15) {
+let pincelFin = 0; // segundo en que termina el último kanji generado
+function pincel(texto, inicio = 0.15, clase = '', ritmo = 1) {
   let t = inicio;
-  return `<span class="kanji" lang="ja" aria-hidden="true">${[...texto].map((c) => {
+  const html = `<span class="kanji${clase ? ` ${clase}` : ''}" lang="ja" aria-hidden="true">${[...texto].map((c) => {
     const d = TRAZOS[c];
     if (!d) throw new Error(`Faltan los trazos de ${c} en src/content/trazos.json`);
     const id = `k${++pincelN}`;
@@ -244,12 +245,12 @@ function pincel(texto, inicio = 0.15) {
       let L = 0;
       for (let j = 1; j < m.length; j++) L += Math.hypot(m[j][0] - m[j - 1][0], m[j][1] - m[j - 1][1]);
       L = Math.round(L);
-      const dur = 0.09 + L / 3000;
+      const dur = (0.09 + L / 3000) * ritmo;
       const estilo = `--da:${L} ${L + 700};--o:${L + 260};--d:${dur.toFixed(2)}s;--i:${t.toFixed(2)}s`;
-      t += dur + 0.035;
+      t += dur + 0.035 * ritmo;
       return `<path class="trazo" clip-path="url(#${id}c${i})" style="${estilo}" d="M${m.map((q) => q.join(' ')).join('L')}"/>`;
     }).join('');
-    t += 0.12;
+    t += 0.12 * ritmo;
     return `<svg class="pincel" viewBox="0 0 1024 1024" width="1024" height="1024"><defs>${clips}
 <filter id="${id}f" x="-8%" y="-8%" width="116%" height="116%" color-interpolation-filters="sRGB">
 <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="${pincelN * 7}" result="ondas"/>
@@ -262,6 +263,8 @@ function pincel(texto, inicio = 0.15) {
 <feMerge><feMergeNode in="halo"/><feMergeNode in="seco"/></feMerge>
 </filter></defs><g filter="url(#${id}f)"><g transform="scale(1,-1) translate(0,-900)">${trazos}</g></g></svg>`;
   }).join('')}</span>`;
+  pincelFin = t;
+  return html;
 }
 
 function titular({ kanji, sol, h1, bajada }) {
@@ -416,12 +419,18 @@ ${leer('pages/tjjf.html').replaceAll('{{TJJF}}', TJJF)}
     'Jiu Jitsu como un sistema de defensa personal': '', '¿Qué son los Artes Marciales?': '¿Qué son las Artes Marciales?',
     'Sistemas de Bugei, Bujutsu y Budo': '', 'Jiu Jitsu como un "Do"': '', [TOG]: '',
   }, 0);
-  const onGiri = `<figure class="on-giri" aria-label="Diagrama de On y Giri">
-<div class="og-nodo"><strong>Tus instructores</strong><span>Dan su tiempo libremente</span></div>
-<div class="og-flecha"><b>On</b><span>la deuda que recibís</span></div>
-<div class="og-nodo og-vos"><strong>Vos</strong><span>Practicás y aprendés</span></div>
-<div class="og-flecha"><b>Giri</b><span>cómo la devolvés</span></div>
-<div class="og-nodo"><strong>Tus alumnos</strong><span>Les enseñás lo aprendido</span></div>
+  // On y Giri: la deuda se recibe de quien enseña y se devuelve enseñando a otros, hacia adelante
+  const kOn = pincel('恩', 0.1, 'en-espera', 0.6);
+  const kGiri = pincel('義理', pincelFin + 0.2, 'en-espera', 0.6);
+  const onGiri = `<figure class="on-giri" data-dibujar>
+<ol class="og-cadena">
+<li class="og-persona"><strong>Tus Sensei</strong><span>Te enseñan dando su tiempo libremente.</span></li>
+<li class="og-paso">${kOn}<p><b>On</b><br>La deuda que se genera con quienes te enseñan.</p></li>
+<li class="og-persona og-vos"><strong>Vos</strong><span>Practicás y aprendés.</span></li>
+<li class="og-paso">${kGiri}<p><b>Giri</b><br>La forma de pagarla: enseñar a otros.</p></li>
+<li class="og-persona"><strong>Tus alumnos</strong><span>Con el tiempo, ellos también van a enseñar.</span></li>
+</ol>
+<figcaption>La deuda no vuelve hacia atrás: pasa hacia adelante, de cada Sensei a sus alumnos.</figcaption>
 </figure>`;
   const glosario = `<section id="palabras-del-dojo"><h2>Palabras del dojo</h2><dl class="glosario">${
     GLOSARIO.map(([, t, d]) => `<div><dt>${t}</dt><dd>${d}</dd></div>`).join('')}</dl></section>`;
