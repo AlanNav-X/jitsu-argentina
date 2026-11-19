@@ -304,13 +304,22 @@ picture { display: block; }
 
 /* Glosario */
 .glosa { border-bottom: 2px dotted var(--celeste-hondo); cursor: help; position: relative; }
-.glosa:hover::after, .glosa:focus::after {
-  content: attr(data-def); position: fixed; left: 16px; right: 16px; bottom: 5rem; z-index: 40;
+/* La aclaración aparece al pasar el cursor, al llegar con el teclado o al tocar la palabra */
+.glosa.abierta { background: color-mix(in srgb, var(--celeste) 28%, transparent); }
+.glosa.abierta::after, .glosa:focus-visible::after {
+  content: attr(data-def); position: fixed; left: 16px; right: 16px; bottom: 5.5rem; z-index: 40;
   background: var(--indigo); color: var(--gi); padding: .7rem .9rem; font-size: var(--t-chico); font-weight: 500; line-height: 1.4;
   font-family: var(--texto); border-left: 6px solid var(--sol);
 }
+@media (hover: hover) {
+  .glosa:hover::after {
+    content: attr(data-def); position: fixed; left: 16px; right: 16px; bottom: 5.5rem; z-index: 40;
+    background: var(--indigo); color: var(--gi); padding: .7rem .9rem; font-size: var(--t-chico); font-weight: 500; line-height: 1.4;
+    font-family: var(--texto); border-left: 6px solid var(--sol);
+  }
+}
 @media (min-width: 900px) and (hover: hover) {
-  .glosa:hover::after, .glosa:focus::after { position: absolute; left: 0; right: auto; bottom: auto; top: calc(100% + 6px); width: max-content; max-width: 17rem; }
+  .glosa:hover::after, .glosa.abierta::after, .glosa:focus-visible::after { position: absolute; left: 0; right: auto; bottom: auto; top: calc(100% + 6px); width: max-content; max-width: 17rem; }
 }
 .glosario { margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); border-top: 1px solid var(--indigo); border-left: 1px solid var(--indigo); background: var(--blanco); }
 .glosario div { padding: .8rem 1rem; border-right: 1px solid var(--indigo); border-bottom: 1px solid var(--indigo); }
@@ -356,11 +365,28 @@ picture { display: block; }
 /* WhatsApp siempre a mano en el celular */
 .barra-wa { display: none; }
 @media (max-width: 899px) {
-  .barra-wa {
-    display: block; position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; text-align: center; text-decoration: none; font-weight: 700;
+  .barra-wa { display: block; position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; }
+  .barra-wa summary {
+    list-style: none; cursor: pointer; text-align: center; font-weight: 700;
     background: var(--sol); color: var(--indigo); border-top: 1px solid var(--indigo);
     padding: .8rem max(16px, env(safe-area-inset-right, 0px)) calc(.8rem + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+    display: flex; justify-content: center; align-items: center; gap: .6rem;
   }
+  .barra-wa summary::-webkit-details-marker { display: none; }
+  .barra-wa summary::after { content: ""; width: .5rem; height: .5rem; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-135deg) translate(-2px, -2px); transition: transform .2s ease; }
+  .barra-wa[open] summary::after { transform: rotate(45deg) translate(-2px, -2px); }
+  .barra-wa-opciones {
+    position: absolute; left: 0; right: 0; bottom: 100%;
+    display: grid; grid-template-columns: 1fr 1fr; background: var(--blanco); border-top: 1px solid var(--indigo);
+    box-shadow: 0 -8px 0 rgba(26, 35, 66, .08);
+  }
+  .barra-wa-opciones a {
+    display: grid; gap: .1rem; text-decoration: none; font-family: var(--display); font-weight: 800; font-size: 1.15rem;
+    padding: .9rem max(16px, env(safe-area-inset-left, 0px)); color: var(--indigo);
+  }
+  .barra-wa-opciones a + a { border-left: 1px solid var(--indigo); padding-left: 16px; padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .barra-wa-opciones a span { font-family: var(--texto); font-weight: 500; font-size: var(--t-chico); color: var(--indigo-medio); }
+  .barra-wa-opciones a:active { background: var(--gi-sombra); }
   body:has(.barra-wa) .pie { padding-bottom: 3.4rem; }
 }
 

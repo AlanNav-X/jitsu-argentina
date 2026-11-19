@@ -94,10 +94,19 @@ const GLOSARIO = [
   ['budo|Budo', 'Budo', 'Artes marciales entendidas como camino de superación personal.'],
   ['katana', 'Katana', 'Sable largo del Samurai.'],
 ];
+// Aclaraciones que se muestran subrayadas en el texto pero no forman parte de "Palabras del dojo"
+const ACLARACIONES = [
+  ['Empi Kata', '', 'Kata de codo.'],
+  ['Do', '', 'Camino.'],
+  ['pequeña inclinación', '', 'El saludo del dojo. Equivale en occidente a darse la mano.'],
+  ['Nihon Jiu Jitsu', '', 'Jiu Jitsu Japonés.'],
+  ['Goshin Jiu Jitsu', '', 'Jiu Jitsu para defensa personal.'],
+  ['Wrestling', '', 'Lucha.'],
+];
 function glosador() {
   const usados = new Set();
   return (html) => {
-    for (const [palabra, , def] of GLOSARIO) {
+    for (const [palabra, , def] of [...ACLARACIONES, ...GLOSARIO]) {
       if (usados.has(palabra)) continue;
       const re = new RegExp(`(^|[\\s(“])(${palabra})(?=[\\s.,;)”:]|$)`);
       if (re.test(html)) {
@@ -138,7 +147,13 @@ function cuerpo({ archivo, contenido }) {
   const i = MENU.findIndex(([h]) => h === archivo);
   const paso = (j, clase, rotulo) => MENU[j] ? `<a class="${clase}" href="${MENU[j][0]}"><span>${rotulo}</span>${MENU[j][1]}</a>` : '<span></span>';
   const seguir = i > 0 ? `<nav class="seguir" aria-label="Seguir leyendo"><div class="caja">${paso(i - 1, 'antes', 'Anterior')}${paso(i + 1, 'despues', 'Siguiente')}</div></nav>` : '';
-  const barra = archivo === 'contacto.html' ? '' : `<a class="barra-wa" href="${WHATSAPP}">Escribir por WhatsApp</a>`;
+  const barra = archivo === 'contacto.html' ? '' : `<details class="barra-wa">
+<summary>Escribir por WhatsApp</summary>
+<div class="barra-wa-opciones" role="group" aria-label="Elegí la sede">
+<a href="${WHATSAPP}">Caballito<span>Lunes, miércoles y viernes</span></a>
+<a href="${WHATSAPP_RAMOS}">Ramos Mejía<span>Martes y jueves</span></a>
+</div>
+</details>`;
   return `<a class="saltar" href="#contenido">Ir al contenido</a>
 <header class="cabecera">
   <div class="caja">
@@ -324,11 +339,12 @@ const paginas = [];
 // Portada
 {
   const flecha = (d) => `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`;
+  const gc = glosador();
   const carrusel = `<div class="carrusel" data-carrusel role="region" aria-roledescription="carrusel" aria-label="Cinturones, del blanco al marrón">
 <div class="carrusel-pista" id="carrusel-pista" tabindex="0" aria-label="Cinturones. Usá las flechas del teclado para cambiar de grado.">
 ${GRADOS.map((x, i) => `<article class="diapo" id="cinturon-${x.n}" data-kyu="${x.n}" style="--cinta:var(--c-${x.c})" role="group" aria-roledescription="diapositiva" aria-label="${i + 1} de ${GRADOS.length}: ${x.n}° kyu, cinturón ${x.nombre}">
 <div class="diapo-nudo">${NUDO}</div>
-<div class="diapo-texto"><p class="diapo-kyu">${x.n}° kyu</p><h3>Cinturón ${x.nombre}</h3><p>${tipo(x.ps[0])}</p><p><a href="grados.html#kyu-${x.n}">Ver el examen completo</a></p></div>
+<div class="diapo-texto"><p class="diapo-kyu">${x.n}° kyu</p><h3>Cinturón ${x.nombre}</h3><p>${gc(tipo(x.ps[0]))}</p><p><a href="grados.html#kyu-${x.n}">Ver el examen completo</a></p></div>
 </article>`).join('\n')}
 </div>
 <div class="carrusel-controles">
@@ -398,7 +414,7 @@ ${leer('pages/tjjf.html').replaceAll('{{TJJF}}', TJJF)}
   const TOG = 'Jiu Jitsu con finalidad no comercial: "On" y "Giri"';
   const secs = secciones('filosofia', {
     'Jiu Jitsu como un sistema de defensa personal': '', '¿Qué son los Artes Marciales?': '¿Qué son las Artes Marciales?',
-    'Sistemas de Bugei, Bujutsu y Budo': '', 'Jiu Jitsu como un "Do" (Camino)': '', [TOG]: '',
+    'Sistemas de Bugei, Bujutsu y Budo': '', 'Jiu Jitsu como un "Do"': '', [TOG]: '',
   }, 0);
   const onGiri = `<figure class="on-giri" aria-label="Diagrama de On y Giri">
 <div class="og-nodo"><strong>Tus instructores</strong><span>Dan su tiempo libremente</span></div>

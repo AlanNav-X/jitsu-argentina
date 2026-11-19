@@ -121,7 +121,7 @@
       puntos.forEach(function (p, j) { if (j === i) p.setAttribute('aria-current', 'true'); else p.removeAttribute('aria-current'); });
       diapos.forEach(function (d, j) {
         d.setAttribute('aria-hidden', String(j !== i));
-        Array.prototype.slice.call(d.querySelectorAll('a')).forEach(function (a) { a.tabIndex = j === i ? 0 : -1; });
+        Array.prototype.slice.call(d.querySelectorAll('a, .glosa')).forEach(function (a) { a.tabIndex = j === i ? 0 : -1; });
       });
       anterior.disabled = i === 0;
       siguiente.disabled = i === diapos.length - 1;
@@ -153,6 +153,34 @@
     });
     mostrar(0);
   }
+
+  /* ---------- Aclaraciones subrayadas: se abren al tocar (o con Enter) y se cierran al tocar afuera ---------- */
+  var glosas = Array.prototype.slice.call(document.querySelectorAll('.glosa'));
+  var cerrarGlosas = function (salvo) { glosas.forEach(function (x) { if (x !== salvo) x.classList.remove('abierta'); }); };
+  glosas.forEach(function (gl) {
+    gl.setAttribute('role', 'button');
+    gl.setAttribute('aria-label', gl.textContent + ': ' + gl.getAttribute('data-def'));
+    var alternar = function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      cerrarGlosas(gl);
+      gl.classList.toggle('abierta');
+    };
+    gl.addEventListener('click', alternar);
+    gl.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') alternar(e); });
+  });
+
+  /* ---------- Barra de WhatsApp: elegir sede ---------- */
+  var barraWa = document.querySelector('.barra-wa');
+  document.addEventListener('click', function (e) {
+    cerrarGlosas(null);
+    if (barraWa && barraWa.open && !barraWa.contains(e.target)) barraWa.open = false;
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    cerrarGlosas(null);
+    if (barraWa) barraWa.open = false;
+  });
 
   /* ---------- Formulario de contacto ---------- */
   var form = document.getElementById('form-contacto');
