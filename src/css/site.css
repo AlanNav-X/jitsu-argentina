@@ -531,3 +531,18 @@ picture { display: block; }
 @media (min-width: 1150px) {
   .grado { grid-template-columns: 8.5rem minmax(0, 1fr) 18rem; grid-template-areas: "cabeza cuerpo panel"; gap: 1.2rem 2rem; }
 }
+
+/* ---------- Nombre de cada dojo: tabla vertical (kanban) y placa ---------- */
+.sede-foto { position: relative; }
+.kanban {
+  position: absolute; top: -.7rem; left: 1rem; z-index: 1;
+  writing-mode: vertical-rl; text-orientation: upright; text-transform: uppercase;
+  font-family: var(--display); font-weight: 800; font-size: clamp(.95rem, .75rem + .8vw, 1.35rem); line-height: 1; letter-spacing: .06em;
+  padding: 1rem .6rem; background: var(--blanco); color: var(--indigo);
+  border: 2px solid var(--indigo); box-shadow: 4px 4px 0 var(--indigo);
+}
+.dojo-nombre {
+  display: inline-block; margin-top: .45rem; padding: .2rem .7rem .25rem;
+  font-family: var(--display); font-weight: 800; font-size: 1rem; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--indigo); border: 1.5px solid var(--indigo); background: var(--blanco);
+}

@@ -30,10 +30,10 @@ const MENU = [
 const SEDES = [
   { id: 'caballito', nombre: 'Sede Caballito', calle: 'General Manuel A. Rodríguez 1191', localidad: 'Caballito', region: 'Ciudad Autónoma de Buenos Aires',
     clases: [['MO', 'Mo', '19:00', '20:30'], ['WE', 'We', '18:30', '20:00'], ['FR', 'Fr', '19:00', '20:30']],
-    redes: ['https://www.instagram.com/caballitojiujitsuclub/'], telefono: '+541130594142' },
+    redes: ['https://www.instagram.com/caballitojiujitsuclub/', 'https://www.facebook.com/share/19qRqyU3RX/'], telefono: '+541130594142' },
   { id: 'ramos-mejia', nombre: 'Sede Ramos Mejía', calle: 'Gabriel Ardoino 430', localidad: 'Ramos Mejía', region: 'Buenos Aires',
     clases: [['TU', 'Tu', '19:30', '21:00'], ['TH', 'Th', '19:30', '21:00']],
-    redes: ['https://www.instagram.com/haedojiujitsuclub/', 'https://www.facebook.com/p/Haedo-Jiu-Jitsu-Club-100057642211295/'], telefono: '+5491163781362' },
+    redes: ['https://www.instagram.com/nishidojojiujitsu/', 'https://www.facebook.com/p/Haedo-Jiu-Jitsu-Club-100057642211295/'], telefono: '+5491163781362' },
 ];
 
 function calendario(sede) {
@@ -178,6 +178,7 @@ ${seguir}
         <li>General Manuel A. Rodríguez 1191</li>
         <li><a href="${WHATSAPP}">WhatsApp +54 11 3059-4142</a></li>
         <li><a href="https://www.instagram.com/caballitojiujitsuclub/">Instagram</a></li>
+        <li><a href="https://www.facebook.com/share/19qRqyU3RX/">Facebook</a></li>
       </ul>
     </div>
     <div>
@@ -185,7 +186,7 @@ ${seguir}
       <ul>
         <li>Gabriel Ardoino 430</li>
         <li><a href="${WHATSAPP_RAMOS}">WhatsApp +54 9 11 6378-1362</a></li>
-        <li><a href="https://www.instagram.com/haedojiujitsuclub/">Instagram</a></li>
+        <li><a href="https://www.instagram.com/nishidojojiujitsu/">Instagram</a></li>
         <li><a href="https://www.facebook.com/p/Haedo-Jiu-Jitsu-Club-100057642211295/">Facebook</a></li>
       </ul>
     </div>
