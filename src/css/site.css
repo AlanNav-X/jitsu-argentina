@@ -12,6 +12,9 @@
   --tatami: #B7BB86;      /* paja igusa */
   --blanco: #FCFCF9;
   --indigo-claro: #2C3866;  /* respiración del próximo día de clase */
+  --feriado: #A3361F;       /* días sin clase: feriados o clases suspendidas */
+  --feriado-fondo: #F8E7E1;
+  --feriado-claro: #F5B9A6;
 
   --c-blanco: #FCFCF9; --c-amarillo: #FFD91D; --c-naranja: #DD792F; --c-verde: #21932E;
   --c-violeta: #5E3E8C; --c-celeste: #A6C7ED; --c-azul: #2D5DE2; --c-marron: #934D19;
@@ -155,7 +158,7 @@ p { margin: 0; }
 .sede-foto { margin: 0; border: 1px solid var(--indigo); box-shadow: -10px 10px 0 var(--tatami); background: var(--gi-sombra); }
 .sede-foto img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
 .sede-datos { min-width: 0; }
-.sede-datos h3 { font-size: clamp(2rem, 1.5rem + 2vw, 3rem); }
+.sede-datos h3 { font-size: clamp(1.5rem, 1.125rem + 1.5vw, 2.25rem); }
 .sensei { display: flex; align-items: center; gap: .8rem; margin-top: .9rem; flex-wrap: wrap; font-size: var(--t-4); }
 .dan {
   display: inline-flex; gap: 3px; align-items: center; height: 1.15rem; padding: 0 .55rem; background: #14161c;
@@ -546,3 +549,63 @@ picture { display: block; }
   font-family: var(--display); font-weight: 800; font-size: 1rem; letter-spacing: .14em; text-transform: uppercase;
   color: var(--indigo); border: 1.5px solid var(--indigo); background: var(--blanco);
 }
+
+/* ---------- Días sin clase en la semana ---------- */
+.semana .nota-feriado { grid-column: 2; font-size: var(--t-chico); font-weight: 700; color: var(--feriado); line-height: 1.35; margin-top: .2rem; }
+.semana li.sin-clase { background: var(--feriado-fondo); }
+.semana li.sin-clase .dia, .semana li.sin-clase .sede { color: var(--feriado); }
+.semana li.sin-clase .hora { color: var(--feriado); text-decoration: line-through; text-decoration-thickness: 2px; opacity: .75; }
+.semana li.sin-clase::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--feriado); }
+.semana li.proxima .nota-feriado { color: var(--feriado-claro); }
+
+/* ---------- Ingreso al panel ---------- */
+.nav-ingresar {
+  font: inherit; font-weight: 500; color: var(--indigo); background: none; border: 0; cursor: pointer;
+  display: inline-flex; align-items: center; gap: .5rem; padding: .6rem 0; width: 100%;
+  border-top: 1px solid var(--gi-sombra);
+}
+.nav-ingresar:hover { color: var(--celeste-hondo); }
+@media (min-width: 900px) {
+  .nav-ingresar { width: auto; border: 1px solid var(--indigo); padding: .35rem .45rem; }
+  .nav-ingresar span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .nav-ingresar:hover { background: var(--indigo); color: var(--gi); }
+}
+button.enlace { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .2em; }
+
+/* ---------- Panel de clases ---------- */
+.panel {
+  width: min(38rem, calc(100vw - 32px)); max-height: min(88vh, 52rem); padding: 0; overflow: auto;
+  border: 1px solid var(--indigo); background: var(--blanco); color: var(--indigo); box-shadow: 10px 10px 0 var(--tatami);
+}
+.panel::backdrop { background: rgba(26, 35, 66, .5); }
+.panel-cabeza { position: sticky; top: 0; z-index: 1; display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1rem 1.3rem; background: var(--blanco); border-bottom: 1px solid var(--indigo); }
+.panel-cabeza h2 { font-size: 1.35rem; }
+.panel-cerrar { display: grid; place-items: center; width: 2.4rem; height: 2.4rem; background: none; border: 1px solid var(--indigo); color: var(--indigo); cursor: pointer; }
+.panel-ingreso, .panel-clases { padding: .4rem 1.3rem 1.4rem; }
+.panel-ingreso .boton { margin-top: 1.3rem; }
+.panel-ayuda { font-size: var(--t-chico); color: var(--indigo-medio); margin: 1rem 0 .4rem; }
+.panel-clases h3 { font-size: 1.05rem; margin: 1.3rem 0 .4rem; }
+.panel-semana { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--indigo); }
+.panel-semana li { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 1rem; padding: .7rem .6rem; border-bottom: 1px solid var(--gi-sombra); }
+.panel-semana li.sin-clase { background: var(--feriado-fondo); }
+.panel-fecha { display: grid; min-width: 0; }
+.panel-fecha strong { font-family: var(--display); font-weight: 800; font-size: 1.05rem; }
+.panel-fecha strong::first-letter { text-transform: uppercase; }
+.panel-fecha span { font-size: var(--t-chico); color: var(--indigo-medio); }
+.panel-fecha .nota-feriado { color: var(--feriado); font-weight: 700; }
+.interruptor {
+  display: inline-flex; align-items: center; gap: .55rem; font: inherit; font-size: var(--t-chico); font-weight: 700; cursor: pointer;
+  background: none; border: 0; padding: .3rem 0; color: var(--feriado); white-space: nowrap;
+}
+.interruptor::before {
+  content: ""; flex: none; width: 2.7rem; height: 1.5rem; border-radius: 1rem; border: 2px solid currentColor;
+  background: radial-gradient(circle at .68rem 50%, currentColor .45rem, transparent .48rem);
+  transition: background-position .2s ease;
+}
+.interruptor[aria-checked="true"] { color: var(--indigo); }
+.interruptor[aria-checked="true"]::before { background: radial-gradient(circle at calc(100% - .68rem) 50%, var(--gi) .45rem, transparent .48rem), var(--indigo); }
+.interruptor:disabled { opacity: .6; cursor: progress; }
+.interruptor-texto { min-width: 4.6rem; text-align: left; }
+.panel-pie { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 1.3rem; }
+.panel-pie p { font-size: var(--t-chico); color: var(--indigo-medio); min-height: 1.4em; }
+.panel-pie p.error { color: var(--feriado); font-weight: 700; }

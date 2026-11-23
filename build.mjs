@@ -19,7 +19,9 @@ const DEMO = process.env.DEMO === '1';
 const WA_TEXTO = encodeURIComponent('Hola, quiero probar una clase de Jiu Jitsu en Caballito.');
 const WHATSAPP = `https://wa.me/541130594142?text=${WA_TEXTO}`;
 const WHATSAPP_RAMOS = `https://wa.me/5491163781362?text=${encodeURIComponent('Hola, quiero probar una clase de Jiu Jitsu en Ramos Mejía.')}`;
-const LOGIN = 'https://jitsuargentina.com.ar/login';
+// URL de la aplicación web del panel de clases (Google Apps Script). Ver servidor/LEEME.md.
+// Vacía: el sitio muestra solo los feriados oficiales y el panel avisa que no está conectado.
+const API_CLASES = process.env.API_CLASES || '';
 const TJJF = 'https://www.jitsufoundation.org/';
 const MENU = [
   ['index.html', 'Sedes y horarios'], ['fundacion.html', 'La Fundación'], ['historia.html', 'Historia'],
@@ -27,6 +29,9 @@ const MENU = [
 ];
 
 /* ---------- Datos de las sedes (una sola fuente para portada, calendario y Google) ---------- */
+const FERIADOS = JSON.parse(leer('content/feriados.json'));
+const DIA_NUM = { MO: 1, TU: 2, WE: 3, TH: 4, FR: 5, SA: 6, SU: 7 };
+
 const SEDES = [
   { id: 'caballito', nombre: 'Sede Caballito', calle: 'General Manuel A. Rodríguez 1191', localidad: 'Caballito', region: 'Ciudad Autónoma de Buenos Aires',
     clases: [['MO', 'Mo', '19:00', '20:30'], ['WE', 'We', '18:30', '20:00'], ['FR', 'Fr', '19:00', '20:30']],
@@ -40,11 +45,14 @@ function calendario(sede) {
   // Semana de referencia: lunes 2 de noviembre de 2026
   const base = { MO: 2, TU: 3, WE: 4, TH: 5, FR: 6 };
   const hora = (h) => h.replace(':', '') + '00';
+  const exdates = (dia, ini) => FERIADOS.dias
+    .filter((f) => f.sedes.includes(sede.id) && new Date(`${f.fecha}T12:00:00Z`).getUTCDay() === DIA_NUM[dia] % 7)
+    .map((f) => `EXDATE;TZID=America/Argentina/Buenos_Aires:${f.fecha.replaceAll('-', '')}T${hora(ini)}`);
   const eventos = sede.clases.map(([dia, , ini, fin]) => [
     'BEGIN:VEVENT', `UID:${sede.id}-${dia.toLowerCase()}@jitsuargentina.com.ar`, 'DTSTAMP:20261101T000000Z',
     `DTSTART;TZID=America/Argentina/Buenos_Aires:202611${String(base[dia]).padStart(2, '0')}T${hora(ini)}`,
     `DTEND;TZID=America/Argentina/Buenos_Aires:202611${String(base[dia]).padStart(2, '0')}T${hora(fin)}`,
-    `RRULE:FREQ=WEEKLY;BYDAY=${dia}`, `SUMMARY:Jiu Jitsu Japonés (${sede.nombre})`,
+    `RRULE:FREQ=WEEKLY;BYDAY=${dia}`, ...exdates(dia, ini), `SUMMARY:Jiu Jitsu Japonés (${sede.nombre})`,
     `LOCATION:${sede.calle}\\, ${sede.localidad}\\, ${sede.region}`, `URL:${SITIO}/`, 'END:VEVENT',
   ].join('\r\n'));
   return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Jiu Jitsu Japones Argentina//Clases//ES', 'CALSCALE:GREGORIAN',
@@ -141,9 +149,36 @@ function cabeza({ archivo, titulo, descripcion, ld = [] }) {
 ${ld.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join('\n')}`;
 }
 
+/* ---------- Datos de clases para el navegador: horarios, feriados y servidor del panel ---------- */
+function datosClases() {
+  const desde = new Date(Date.now() - 7 * 864e5).toISOString().slice(0, 10);
+  const datos = {
+    api: API_CLASES,
+    sedes: SEDES.map((s) => ({ id: s.id, nombre: s.nombre, clases: s.clases.map(([d, , ini, fin]) => [DIA_NUM[d], ini, fin]) })),
+    feriados: Object.fromEntries(FERIADOS.dias.filter((f) => f.fecha >= desde).map((f) => [f.fecha, { nombre: f.nombre, sedes: f.sedes }])),
+  };
+  return `<script type="application/json" id="datos-clases">${JSON.stringify(datos)}</script>`;
+}
+function panelAdmin() {
+  return `<dialog class="panel" id="panel-admin" aria-labelledby="panel-titulo">
+<div class="panel-cabeza"><h2 id="panel-titulo">Panel de clases</h2><button type="button" class="panel-cerrar" data-cerrar aria-label="Cerrar"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+<form class="panel-ingreso" id="panel-ingreso">
+<div class="campo"><label for="p-usuario">Usuario</label><input id="p-usuario" name="usuario" autocomplete="username" autocapitalize="off" required></div>
+<div class="campo"><label for="p-clave">Contraseña</label><input id="p-clave" name="clave" type="password" autocomplete="current-password" required></div>
+<button class="boton" type="submit">Ingresar</button>
+<p class="estado" id="panel-estado-ingreso" role="status" hidden></p>
+</form>
+<div class="panel-clases" id="panel-clases" hidden>
+<p class="panel-ayuda">Próximas cuatro semanas. Activá o desactivá cada clase; los cambios se guardan al instante. Los feriados empiezan sin clase.</p>
+<div id="panel-lista"></div>
+<div class="panel-pie"><p id="panel-estado" role="status"></p><button type="button" class="boton boton-linea" id="panel-salir">Salir</button></div>
+</div>
+</dialog>`;
+}
+
 function cuerpo({ archivo, contenido }) {
   const nav = MENU.map(([href, txt]) =>
-    `<li><a href="${href}"${href === archivo ? ' aria-current="page"' : ''}>${txt}</a></li>`).join('');
+    `<li><a href="${href}"${href === archivo ? ' aria-current="page"' : ''}>${txt}</a></li>`).join('') + `<li class="nav-ingreso"><button type="button" class="nav-ingresar" data-abrir-panel aria-haspopup="dialog" aria-controls="panel-admin"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="1.5"/><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3"/><path d="M12 14.5v2.500"/></svg><span>Ingresar</span></button></li>`;
   const i = MENU.findIndex(([h]) => h === archivo);
   const paso = (j, clase, rotulo) => MENU[j] ? `<a class="${clase}" href="${MENU[j][0]}"><span>${rotulo}</span>${MENU[j][1]}</a>` : '<span></span>';
   const seguir = i > 0 ? `<nav class="seguir" aria-label="Seguir leyendo"><div class="caja">${paso(i - 1, 'antes', 'Anterior')}${paso(i + 1, 'despues', 'Siguiente')}</div></nav>` : '';
@@ -191,15 +226,17 @@ ${seguir}
       </ul>
     </div>
     <div>
-      <h2>Alumnos</h2>
+      <h2>Sitio</h2>
       <ul>
-        <li><a href="${LOGIN}">Ingresar a tu cuenta</a></li>
+        <li><button type="button" class="enlace" data-abrir-panel>Panel de clases</button></li>
         <li><a href="contacto.html">Contacto</a></li>
       </ul>
     </div>
   </div>
 </footer>
 ${barra}
+${panelAdmin()}
+${datosClases()}
 <script src="js/site.js"></script>`;
 }
 

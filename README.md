@@ -6,7 +6,8 @@ Sitio web de la Fundación Jiu Jitsu Argentina, el grupo de Shorinji Kan Jiu Jit
 
 ## Contenido
 
-- **Sedes y horarios:** dojos de Caballito y Ramos Mejía, con sensei, dirección, días de clase y la próxima clase según la hora de Buenos Aires.
+- **Sedes y horarios:** dojos de Caballito y Ramos Mejía, con sensei, dirección, días de clase y la próxima clase según la hora de Buenos Aires. La semana muestra las fechas reales y marca los feriados nacionales sin clase.
+- **Panel de clases:** el administrador ingresa desde el ícono del menú e indica, fecha por fecha, si hay clase o no (por ejemplo, para confirmar una clase en un feriado).
 - **Cinturones:** carrusel del blanco al marrón en la portada, con flechas, deslizamiento y teclado.
 - **Grados:** los ocho grados kyu con los requisitos de cada examen, los conocimientos y defensas que se incorporan, y la explicación de los mon de 7° y 6° kyu.
 - **La Fundación, Historia y Filosofía:** el origen del estilo, el linaje de Tokio a Buenos Aires, On y Giri, y un glosario de términos del dojo.
@@ -50,6 +51,8 @@ build.mjs    genera dist/
 | Textos de las páginas | `src/content/*.txt` |
 | Información de los mons | `MONS` en `build.mjs` |
 | Kanji de los encabezados | `src/content/trazos.json` (contornos y orden de trazos) |
+| Feriados | `node scripts/feriados.mjs` descarga los de argentina.gob.ar en `src/content/feriados.json` |
+| Servidor del panel | `servidor/Codigo.gs` y la URL en `API_CLASES` (`build.mjs`); instalación en `servidor/LEEME.md` |
 
 ## Créditos
 
