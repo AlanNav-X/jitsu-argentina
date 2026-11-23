@@ -18,6 +18,15 @@ DTSTAMP:20261101T000000Z
 DTSTART;TZID=America/Argentina/Buenos_Aires:20261102T190000
 DTEND;TZID=America/Argentina/Buenos_Aires:20261102T203000
 RRULE:FREQ=WEEKLY;BYDAY=MO
+EXDATE;TZID=America/Argentina/Buenos_Aires:20260216T190000
+EXDATE;TZID=America/Argentina/Buenos_Aires:20260323T190000
+EXDATE;TZID=America/Argentina/Buenos_Aires:20260525T190000
+EXDATE;TZID=America/Argentina/Buenos_Aires:20260615T190000
+EXDATE;TZID=America/Argentina/Buenos_Aires:20260817T190000
+EXDATE;TZID=America/Argentina/Buenos_Aires:20261012T190000
+EXDATE;TZID=America/Argentina/Buenos_Aires:20261109T190000
+EXDATE;TZID=America/Argentina/Buenos_Aires:20261123T190000
+EXDATE;TZID=America/Argentina/Buenos_Aires:20261207T190000
 SUMMARY:Jiu Jitsu Japonés (Sede Caballito)
 LOCATION:General Manuel A. Rodríguez 1191\, Caballito\, Ciudad Autónoma de Buenos Aires
 URL:https://alannav-x.github.io/jitsu-argentina/
@@ -38,6 +47,11 @@ DTSTAMP:20261101T000000Z
 DTSTART;TZID=America/Argentina/Buenos_Aires:20261106T190000
 DTEND;TZID=America/Argentina/Buenos_Aires:20261106T203000
 RRULE:FREQ=WEEKLY;BYDAY=FR
+EXDATE;TZID=America/Argentina/Buenos_Aires:20260403T190000
+EXDATE;TZID=America/Argentina/Buenos_Aires:20260501T190000
+EXDATE;TZID=America/Argentina/Buenos_Aires:20260710T190000
+EXDATE;TZID=America/Argentina/Buenos_Aires:20261225T190000
+EXDATE;TZID=America/Argentina/Buenos_Aires:20270101T190000
 SUMMARY:Jiu Jitsu Japonés (Sede Caballito)
 LOCATION:General Manuel A. Rodríguez 1191\, Caballito\, Ciudad Autónoma de Buenos Aires
 URL:https://alannav-x.github.io/jitsu-argentina/

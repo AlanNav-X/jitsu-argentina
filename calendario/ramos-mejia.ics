@@ -18,6 +18,9 @@ DTSTAMP:20261101T000000Z
 DTSTART;TZID=America/Argentina/Buenos_Aires:20261103T193000
 DTEND;TZID=America/Argentina/Buenos_Aires:20261103T210000
 RRULE:FREQ=WEEKLY;BYDAY=TU
+EXDATE;TZID=America/Argentina/Buenos_Aires:20260217T193000
+EXDATE;TZID=America/Argentina/Buenos_Aires:20260324T193000
+EXDATE;TZID=America/Argentina/Buenos_Aires:20261208T193000
 SUMMARY:Jiu Jitsu Japonés (Sede Ramos Mejía)
 LOCATION:Gabriel Ardoino 430\, Ramos Mejía\, Buenos Aires
 URL:https://alannav-x.github.io/jitsu-argentina/
@@ -28,6 +31,9 @@ DTSTAMP:20261101T000000Z
 DTSTART;TZID=America/Argentina/Buenos_Aires:20261105T193000
 DTEND;TZID=America/Argentina/Buenos_Aires:20261105T210000
 RRULE:FREQ=WEEKLY;BYDAY=TH
+EXDATE;TZID=America/Argentina/Buenos_Aires:20260101T193000
+EXDATE;TZID=America/Argentina/Buenos_Aires:20260402T193000
+EXDATE;TZID=America/Argentina/Buenos_Aires:20260709T193000
 SUMMARY:Jiu Jitsu Japonés (Sede Ramos Mejía)
 LOCATION:Gabriel Ardoino 430\, Ramos Mejía\, Buenos Aires
 URL:https://alannav-x.github.io/jitsu-argentina/
