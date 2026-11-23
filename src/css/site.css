@@ -535,11 +535,11 @@ picture { display: block; }
 /* ---------- Nombre de cada dojo: tabla vertical (kanban) y placa ---------- */
 .sede-foto { position: relative; }
 .kanban {
-  position: absolute; top: -.7rem; left: 1rem; z-index: 1;
-  writing-mode: vertical-rl; text-orientation: upright; text-transform: uppercase;
-  font-family: var(--display); font-weight: 800; font-size: clamp(.95rem, .75rem + .8vw, 1.35rem); line-height: 1; letter-spacing: .06em;
-  padding: 1rem .6rem; background: var(--blanco); color: var(--indigo);
-  border: 2px solid var(--indigo); box-shadow: 4px 4px 0 var(--indigo);
+  position: absolute; top: 1rem; left: 1rem; z-index: 1; max-width: calc(100% - 2rem);
+  font-family: var(--display); font-weight: 800; font-size: clamp(1.15rem, .8rem + 1.4vw, 1.9rem); line-height: 1.1;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: .55rem 1rem .6rem; background: var(--indigo); color: var(--gi);
+  border-left: 6px solid var(--sol); box-shadow: 4px 4px 0 rgba(26, 35, 66, .35);
 }
 .dojo-nombre {
   display: inline-block; margin-top: .45rem; padding: .2rem .7rem .25rem;
